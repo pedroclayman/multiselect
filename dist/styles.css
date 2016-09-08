@@ -1,0 +1,19 @@
+multi-select {
+  display: inline-block;
+  border: 1px solid gray;
+  padding: 10px;
+}
+
+.choices li.selected a {
+  color: red;
+}
+
+.pills {
+  padding: 0;
+}
+
+.pills li {
+  display: inline-block;
+  border: 1px solid gray;
+  padding: 2px 5px;
+}
