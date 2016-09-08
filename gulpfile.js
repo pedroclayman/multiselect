@@ -8,7 +8,7 @@ var stylesGlob = 'src/css/*.scss',
     scriptsGlob = 'src/js/*.js';
 
 gulp.task('js', function(){
-    return gulp.src(scriptsGlog)
+    return gulp.src(scriptsGlob)
         .pipe(gp_concat('multiselect.js'))
         .pipe(gulp.dest('dist'))
         .pipe(gp_rename('multiselect.min.js'))
