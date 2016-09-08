@@ -74,6 +74,26 @@ angular.module('multi-select').directive('multiSelect', [
               }
             }
 
+            function _handleFocusIn(ev) {
+              if (!scope.options.isOpen) {
+                scope.$apply(function() {
+                  scope.options.isOpen = true;
+                });
+              }
+            }
+
+            function _handleFocusOut(ev) {
+              if (scope.options.isOpen) {
+                scope.$apply(function() {
+                  scope.options.isOpen = false;
+                });
+              }
+            }
+
+            function _handleBodyFocus(ev) {
+              console.log(ev);
+            }
+
             function _initialize() {
               attrs.$observe('closeOnSelect',
                 function(newVal) {
@@ -93,9 +113,18 @@ angular.module('multi-select').directive('multiSelect', [
             var searchEl = element[0].querySelector('input[type=search]');
             searchEl.addEventListener('click', _handleInputClick);
 
+            searchEl.addEventListener('focusin', _handleFocusIn);
+            searchEl.addEventListener('focusout', _handleFocusOut);
+
+            // var bodyEl = document.querySelector('body');
+            // bodyEl.addEventListener('focusin', _handleBodyFocus);
+
             scope.$on('$destroy', function() {
               element[0].removeEventListener('keydown', _dispatchKeyup);
               searchEl.removeEventListener('click', _handleInputClick);
+              searchEl.removeEventListener('focusin', _handleFocusIn);
+              searchEl.removeEventListener('focusout', _handleFocusOut);
+
             });
           }
         }

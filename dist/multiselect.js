@@ -175,6 +175,26 @@ angular.module('multi-select').directive('multiSelect', [
               }
             }
 
+            function _handleFocusIn(ev) {
+              if (!scope.options.isOpen) {
+                scope.$apply(function() {
+                  scope.options.isOpen = true;
+                });
+              }
+            }
+
+            function _handleFocusOut(ev) {
+              if (scope.options.isOpen) {
+                scope.$apply(function() {
+                  scope.options.isOpen = false;
+                });
+              }
+            }
+
+            function _handleBodyFocus(ev) {
+              console.log(ev);
+            }
+
             function _initialize() {
               attrs.$observe('closeOnSelect',
                 function(newVal) {
@@ -194,9 +214,18 @@ angular.module('multi-select').directive('multiSelect', [
             var searchEl = element[0].querySelector('input[type=search]');
             searchEl.addEventListener('click', _handleInputClick);
 
+            searchEl.addEventListener('focusin', _handleFocusIn);
+            searchEl.addEventListener('focusout', _handleFocusOut);
+
+            // var bodyEl = document.querySelector('body');
+            // bodyEl.addEventListener('focusin', _handleBodyFocus);
+
             scope.$on('$destroy', function() {
               element[0].removeEventListener('keydown', _dispatchKeyup);
               searchEl.removeEventListener('click', _handleInputClick);
+              searchEl.removeEventListener('focusin', _handleFocusIn);
+              searchEl.removeEventListener('focusout', _handleFocusOut);
+
             });
           }
         }
@@ -208,8 +237,8 @@ angular.module('multi-select').directive('multiSelect', [
 angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
     $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" /><multi-select-choices></multi-select-choices>');
-    $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="getItems().length"><li ng-repeat="item in getItems()">{{item}}&nbsp;<a href ng-click="unselectItem(item)">x</a></li></ul>');
-    $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a href ng-click="choiceClicked(item)">{{item}}</a></li></ul>');
+    $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="getItems().length"><li ng-repeat="item in getItems()">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
+    $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a href tabindex="-1" ng-click="choiceClicked(item)">{{item}}</a></li></ul>');
   }
 ]);
 
