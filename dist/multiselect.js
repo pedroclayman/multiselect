@@ -199,7 +199,7 @@ angular.module('multi-select').directive('multiSelect', [
               scope.$apply();
             }
 
-            function _elementHandle(ev) {
+            function _elementHandler(ev) {
               ev.stopPropagation();
               if (!scope.options.isOpen) {
                 scope.$apply(function() {
@@ -209,7 +209,7 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
 
-            function _bodyHandle(ev) {
+            function _bodyHandler(ev) {
               if (scope.options.isOpen) {
                 scope.$apply(function() {
                   scope.options.isOpen = false;
@@ -237,22 +237,22 @@ angular.module('multi-select').directive('multiSelect', [
             var searchEl = element[0].querySelector('input[type=search]');
             //searchEl.addEventListener('click', _handleInputClick);
 
-            element[0].addEventListener('click', _elementHandle);
-            element[0].addEventListener('focusin', _elementHandle);
+            element[0].addEventListener('click', _elementHandler);
+            element[0].addEventListener('focusin', _elementHandler);
 
             var bodyEl = document.querySelector('body');
-            bodyEl.addEventListener('focusin', _bodyHandle);
-            bodyEl.addEventListener('click', _bodyHandle);
+            bodyEl.addEventListener('focusin', _bodyHandler);
+            bodyEl.addEventListener('click', _bodyHandler);
 
             // var bodyEl = document.querySelector('body');
             // bodyEl.addEventListener('focusin', _handleBodyFocus);
 
             scope.$on('$destroy', function() {
               element[0].removeEventListener('keydown', _dispatchKeyup);
-              element[0].removeEventListener('focusin', _elementHandle);
-              element[0].removeEventListener('click', _elementHandle);
-              bodyEl.removeEventListener('focusin', _bodyHandle);
-              bodyEl.removeEventListener('click', _bodyHandle);
+              element[0].removeEventListener('focusin', _elementHandler);
+              element[0].removeEventListener('click', _elementHandler);
+              bodyEl.removeEventListener('focusin', _bodyHandler);
+              bodyEl.removeEventListener('click', _bodyHandler);
 
             });
           }
