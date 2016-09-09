@@ -1,17 +1,19 @@
 angular.module('multi-select').directive('multiSelectChoices', [
-  'constants',
-  function multiSelectChoicesDirective(constants) {
+  'constants', '$timeout',
+  function multiSelectChoicesDirective(constants, $timeout) {
     function multiSelectChoicesCtrl(scope) {
     }
 
     return {
       restrict: 'E',
-      require: ['^multiSelect', 'multiSelectChoices'],
+      require: ['^multiSelect', 'multiSelectChoices', 'scrollTo'],
       templateUrl: 'multiSelect/choices',
       scope: true,
       link: function (scope, element, attrs, ctrls) {
         var msCtrl = ctrls[0];
         var ctrl = ctrls[1];
+        var scrollToCtrl = ctrls[2];
+
         msCtrl.registerCtrl('choices', ctrl);
 
         scope.currentIndex = 0;
@@ -39,10 +41,16 @@ angular.module('multi-select').directive('multiSelectChoices', [
               }
               else {
                 scope.currentIndex = (scope.currentIndex+1) % scope.filteredChoices.length;
+                $timeout(function() {
+                  scrollToCtrl.scrollTo('.selected');
+                });
               }
               break;
             case constants.KEY.UP:
               scope.currentIndex = scope.currentIndex-1 < 0 ? scope.filteredChoices.length - 1 : scope.currentIndex-1;
+              $timeout(function() {
+                scrollToCtrl.scrollTo('.selected');
+              });
               break;
             case constants.KEY.ENTER:
               if (scope.options.isOpen) {

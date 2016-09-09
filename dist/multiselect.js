@@ -32,20 +32,50 @@
 
 angular.module('multi-select', []);
 
+if (!Element.prototype.scrollIntoViewIfNeeded) {
+  Element.prototype.scrollIntoViewIfNeeded = function (centerIfNeeded) {
+    centerIfNeeded = arguments.length === 0 ? true : !!centerIfNeeded;
+
+    var parent = this.parentNode,
+        parentComputedStyle = window.getComputedStyle(parent, null),
+        parentBorderTopWidth = parseInt(parentComputedStyle.getPropertyValue('border-top-width')),
+        parentBorderLeftWidth = parseInt(parentComputedStyle.getPropertyValue('border-left-width')),
+        overTop = this.offsetTop - parent.offsetTop < parent.scrollTop,
+        overBottom = (this.offsetTop - parent.offsetTop + this.clientHeight - parentBorderTopWidth) > (parent.scrollTop + parent.clientHeight),
+        overLeft = this.offsetLeft - parent.offsetLeft < parent.scrollLeft,
+        overRight = (this.offsetLeft - parent.offsetLeft + this.clientWidth - parentBorderLeftWidth) > (parent.scrollLeft + parent.clientWidth),
+        alignWithTop = overTop && !overBottom;
+
+    if ((overTop || overBottom) && centerIfNeeded) {
+      parent.scrollTop = this.offsetTop - parent.offsetTop - parent.clientHeight / 2 - parentBorderTopWidth + this.clientHeight / 2;
+    }
+
+    if ((overLeft || overRight) && centerIfNeeded) {
+      parent.scrollLeft = this.offsetLeft - parent.offsetLeft - parent.clientWidth / 2 - parentBorderLeftWidth + this.clientWidth / 2;
+    }
+
+    if ((overTop || overBottom || overLeft || overRight) && !centerIfNeeded) {
+      this.scrollIntoView(alignWithTop);
+    }
+  };
+}
+
 angular.module('multi-select').directive('multiSelectChoices', [
-  'constants',
-  function multiSelectChoicesDirective(constants) {
+  'constants', '$timeout',
+  function multiSelectChoicesDirective(constants, $timeout) {
     function multiSelectChoicesCtrl(scope) {
     }
 
     return {
       restrict: 'E',
-      require: ['^multiSelect', 'multiSelectChoices'],
+      require: ['^multiSelect', 'multiSelectChoices', 'scrollTo'],
       templateUrl: 'multiSelect/choices',
       scope: true,
       link: function (scope, element, attrs, ctrls) {
         var msCtrl = ctrls[0];
         var ctrl = ctrls[1];
+        var scrollToCtrl = ctrls[2];
+
         msCtrl.registerCtrl('choices', ctrl);
 
         scope.currentIndex = 0;
@@ -73,10 +103,16 @@ angular.module('multi-select').directive('multiSelectChoices', [
               }
               else {
                 scope.currentIndex = (scope.currentIndex+1) % scope.filteredChoices.length;
+                $timeout(function() {
+                  scrollToCtrl.scrollTo('.selected');
+                });
               }
               break;
             case constants.KEY.UP:
               scope.currentIndex = scope.currentIndex-1 < 0 ? scope.filteredChoices.length - 1 : scope.currentIndex-1;
+              $timeout(function() {
+                scrollToCtrl.scrollTo('.selected');
+              });
               break;
             case constants.KEY.ENTER:
               if (scope.options.isOpen) {
@@ -264,7 +300,7 @@ angular.module('multi-select').directive('multiSelect', [
 
 angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
-    $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" /><multi-select-choices tabindex="-1"></multi-select-choices>');
+    $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" /><multi-select-choices tabindex="-1" scroll-to></multi-select-choices>');
     $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="getItems().length"><li ng-repeat="item in getItems()">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
     $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a href tabindex="-1" ng-click="choiceClicked(item)">{{item}}</a></li></ul>');
   }
@@ -297,3 +333,35 @@ angular.module('multi-select').directive('multiSelectPills', [
     }
   }
 ]);
+
+angular.module('multi-select').directive('scrollTo', [
+
+  function scrollToDirective() {
+
+    function scrollToController() {
+    }
+
+    return {
+      restrict: 'A',
+      scope: false,
+      require: ['scrollTo'],
+      controller: [scrollToController],
+      link: function(scope, element, attrs, ctrls) {
+        var ctrl = ctrls[0];
+
+        ctrl.scrollTo = function(itemSelector) {
+          var scrollToEl = element[0].querySelector(itemSelector);
+          scrollToEl.scrollIntoViewIfNeeded();
+          // var boundingRect = scrollToEl.getBoundingClientRectangle();
+          // var offsetTop = boundingRect.top;
+          // var height = boundingRect.height;
+          //
+          // var parent = scrollToEl.parentElement;
+          // var parentHeight = parent.scrollHeight;
+          //
+          // if ()
+        }
+      }
+    }
+  }
+])
