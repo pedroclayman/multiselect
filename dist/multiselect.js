@@ -1,3 +1,35 @@
+/* focusin/out event polyfill (firefox) */
+!function(){
+    var w = window,
+        d = w.document;
+
+    if( w.onfocusin === undefined ){
+        d.addEventListener('focus'    ,addPolyfill    ,true);
+        d.addEventListener('blur'     ,addPolyfill    ,true);
+        d.addEventListener('focusin'  ,removePolyfill ,true);
+        d.addEventListener('focusout' ,removePolyfill ,true);
+    }
+    function addPolyfill(e){
+        var type = e.type === 'focus' ? 'focusin' : 'focusout';
+        var event = new CustomEvent(type, { bubbles:true, cancelable:false });
+        event.c1Generated = true;
+        e.target.dispatchEvent( event );
+    }
+    function removePolyfill(e){
+        if(!e.c1Generated){ // focus after focusin, so chrome will the first time trigger tow times focusin
+            d.removeEventListener('focus'    ,addPolyfill    ,true);
+            d.removeEventListener('blur'     ,addPolyfill    ,true);
+            d.removeEventListener('focusin'  ,removePolyfill ,true);
+            d.removeEventListener('focusout' ,removePolyfill ,true);
+        }
+        setTimeout(function(){
+            d.removeEventListener('focusin'  ,removePolyfill ,true);
+            d.removeEventListener('focusout' ,removePolyfill ,true);
+        });
+    }
+
+}();
+
 angular.module('multi-select', []);
 
 angular.module('multi-select').directive('multiSelectChoices', [
@@ -244,7 +276,7 @@ angular.module('multi-select').directive('multiSelect', [
 
 angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
-    $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" /><multi-select-choices></multi-select-choices>');
+    $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" /><multi-select-choices tabindex="-1"></multi-select-choices>');
     $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="getItems().length"><li ng-repeat="item in getItems()">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
     $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a href tabindex="-1" ng-click="choiceClicked(item)">{{item}}</a></li></ul>');
   }
