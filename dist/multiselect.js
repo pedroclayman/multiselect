@@ -199,18 +199,7 @@ angular.module('multi-select').directive('multiSelect', [
               scope.$apply();
             }
 
-            function _handleClick(ev) {
-              console.log('element click', ev);
-              if (!scope.options.isOpen) {
-                ev.stopPropagation();
-                scope.$apply(function() {
-                  scope.options.isOpen = true;
-                });
-              }
-            }
-
             function _elementHandle(ev) {
-              console.log('element:' + ev.type, ev);
               ev.stopPropagation();
               if (!scope.options.isOpen) {
                 scope.$apply(function() {
@@ -221,7 +210,6 @@ angular.module('multi-select').directive('multiSelect', [
 
 
             function _bodyHandle(ev) {
-              console.log('body:' + ev.type, ev);
               if (scope.options.isOpen) {
                 scope.$apply(function() {
                   scope.options.isOpen = false;
@@ -261,8 +249,8 @@ angular.module('multi-select').directive('multiSelect', [
 
             scope.$on('$destroy', function() {
               element[0].removeEventListener('keydown', _dispatchKeyup);
-              element[0].removeEventListener('focusin', _handleClick);
-              element[0].removeEventListener('click', _handleClick);
+              element[0].removeEventListener('focusin', _elementHandle);
+              element[0].removeEventListener('click', _elementHandle);
               bodyEl.removeEventListener('focusin', _bodyHandle);
               bodyEl.removeEventListener('click', _bodyHandle);
 
