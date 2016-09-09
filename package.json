@@ -5,7 +5,7 @@
   "keywords": "multiselect, component, directive, input, form",
   "main": "app.js",
   "scripts": {
-    "start": "lite-server"
+    "start": "lite-server -c config/lite-server.config.json"
   },
   "author": "Peter Mihalik",
   "license": "MIT",

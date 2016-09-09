@@ -1,0 +1,8 @@
+{
+  "server": {
+    "baseDir": "./sample",
+    "routes": {
+      "/dist": "dist"
+    }
+  }
+}
