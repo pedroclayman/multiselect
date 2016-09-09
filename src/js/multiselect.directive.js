@@ -66,7 +66,19 @@ angular.module('multi-select').directive('multiSelect', [
               scope.$apply();
             }
 
-            function _handleInputClick(ev) {
+            function _handleClick(ev) {
+              console.log('element click', ev);
+              if (!scope.options.isOpen) {
+                ev.stopPropagation();
+                scope.$apply(function() {
+                  scope.options.isOpen = true;
+                });
+              }
+            }
+
+            function _elementHandle(ev) {
+              console.log('element:' + ev.type, ev);
+              ev.stopPropagation();
               if (!scope.options.isOpen) {
                 scope.$apply(function() {
                   scope.options.isOpen = true;
@@ -74,15 +86,9 @@ angular.module('multi-select').directive('multiSelect', [
               }
             }
 
-            function _handleFocusIn(ev) {
-              if (!scope.options.isOpen) {
-                scope.$apply(function() {
-                  scope.options.isOpen = true;
-                });
-              }
-            }
 
-            function _handleFocusOut(ev) {
+            function _bodyHandle(ev) {
+              console.log('body:' + ev.type, ev);
               if (scope.options.isOpen) {
                 scope.$apply(function() {
                   scope.options.isOpen = false;
@@ -90,9 +96,6 @@ angular.module('multi-select').directive('multiSelect', [
               }
             }
 
-            function _handleBodyFocus(ev) {
-              console.log(ev);
-            }
 
             function _initialize() {
               attrs.$observe('closeOnSelect',
@@ -111,19 +114,24 @@ angular.module('multi-select').directive('multiSelect', [
 
             // click on input
             var searchEl = element[0].querySelector('input[type=search]');
-            searchEl.addEventListener('click', _handleInputClick);
+            //searchEl.addEventListener('click', _handleInputClick);
 
-            searchEl.addEventListener('focusin', _handleFocusIn);
-            searchEl.addEventListener('focusout', _handleFocusOut);
+            element[0].addEventListener('click', _elementHandle);
+            element[0].addEventListener('focusin', _elementHandle);
+
+            var bodyEl = document.querySelector('body');
+            bodyEl.addEventListener('focusin', _bodyHandle);
+            bodyEl.addEventListener('click', _bodyHandle);
 
             // var bodyEl = document.querySelector('body');
             // bodyEl.addEventListener('focusin', _handleBodyFocus);
 
             scope.$on('$destroy', function() {
               element[0].removeEventListener('keydown', _dispatchKeyup);
-              searchEl.removeEventListener('click', _handleInputClick);
-              searchEl.removeEventListener('focusin', _handleFocusIn);
-              searchEl.removeEventListener('focusout', _handleFocusOut);
+              element[0].removeEventListener('focusin', _handleClick);
+              element[0].removeEventListener('click', _handleClick);
+              bodyEl.removeEventListener('focusin', _bodyHandle);
+              bodyEl.removeEventListener('click', _bodyHandle);
 
             });
           }
