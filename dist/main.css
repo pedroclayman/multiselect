@@ -2,19 +2,18 @@ multi-select {
   display: inline-block;
   border: 1px solid gray;
   padding: 10px; }
-  multi-select multi-select-choices {
+  multi-select multi-select-choices .choices {
     display: block;
-    max-height: 100px;
-    overflow-y: auto;
-    border: 1px solid gray;
-    border-top: none; }
-  multi-select .choices {
     margin: 0;
-    padding: 0; }
-    multi-select .choices li {
+    padding: 0;
+    border: 1px solid gray;
+    border-top: none;
+    max-height: 100px;
+    overflow-y: auto; }
+    multi-select multi-select-choices .choices li {
       display: block;
       padding: 2px 5px; }
-      multi-select .choices li.selected a {
+      multi-select multi-select-choices .choices li.selected a {
         color: red; }
   multi-select .pills {
     margin: 0;
