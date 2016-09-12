@@ -249,7 +249,6 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
             function _elementHandler(ev) {
-              ev.stopPropagation();
               if (!scope.options.isOpen) {
                 scope.$apply(function() {
                   scope.options.isOpen = true;
@@ -259,7 +258,7 @@ angular.module('multi-select').directive('multiSelect', [
 
 
             function _bodyHandler(ev) {
-              if (scope.options.isOpen) {
+              if (scope.options.isOpen && !element[0].contains(ev.target)) {
                 scope.$apply(function() {
                   scope.options.isOpen = false;
                 });
@@ -315,7 +314,7 @@ angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
     $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" /><multi-select-choices tabindex="-1" scroll-to></multi-select-choices>');
     $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="getItems().length"><li ng-repeat="item in getItems()">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
-    $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item)">{{item}}</a></li></ul>');
+    $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item)">{{item}}</a></li></ul>');
   }
 ]);
 
