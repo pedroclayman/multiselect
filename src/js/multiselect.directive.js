@@ -2,7 +2,7 @@ angular.module('multi-select').directive('multiSelect', [
   'constants', '$parse',
   function multiSelectDirective(constants, $parse) {
 
-    var _registeredCtrls = [];
+
 
     function multiSelectDirectiveCtrl() {
     }
@@ -16,6 +16,8 @@ angular.module('multi-select').directive('multiSelect', [
       },
       controller: ['$scope', multiSelectDirectiveCtrl],
       compile: function() {
+        var _registeredCtrls = [];
+
         return {
           pre: function(scope, element, attrs, ctrls) {
             var ngModelCtrl = ctrls[0];
@@ -43,8 +45,8 @@ angular.module('multi-select').directive('multiSelect', [
 
             ctrl.selectItem = scope.selectItem = function(item) {
               if (ngModelCtrl.$modelValue == null) {
-                var ngModelGetter = $parse(attrs.ngModel);
-                ngModelGetter.assign(scope.$parent, [item]);
+                var setter = $parse(attrs.ngModel).assign;
+                setter(scope.$parent, [item]);
               }
               else{
                 // todo error handling
