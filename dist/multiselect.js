@@ -352,14 +352,6 @@ angular.module('multi-select').directive('scrollTo', [
         ctrl.scrollTo = function(itemSelector) {
           var scrollToEl = element[0].querySelector(itemSelector);
           scrollToEl.scrollIntoViewIfNeeded();
-          // var boundingRect = scrollToEl.getBoundingClientRectangle();
-          // var offsetTop = boundingRect.top;
-          // var height = boundingRect.height;
-          //
-          // var parent = scrollToEl.parentElement;
-          // var parentHeight = parent.scrollHeight;
-          //
-          // if ()
         }
       }
     }
