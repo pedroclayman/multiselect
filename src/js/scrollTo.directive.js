@@ -20,4 +20,4 @@ angular.module('multi-select').directive('scrollTo', [
       }
     }
   }
-])
+]);

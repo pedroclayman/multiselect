@@ -1,6 +1,6 @@
 angular.module('multi-select').directive('multiSelect', [
-  'constants',
-  function multiSelectDirective(constants) {
+  'constants', '$parse',
+  function multiSelectDirective(constants, $parse) {
 
     var _registeredCtrls = [];
 
@@ -42,16 +42,26 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
             ctrl.selectItem = scope.selectItem = function(item) {
-              ngModelCtrl.$modelValue.push(item);
+              if (ngModelCtrl.$modelValue == null) {
+                var ngModelGetter = $parse(attrs.ngModel);
+                ngModelGetter.assign(scope.$parent, [item]);
+              }
+              else{
+                // todo error handling
+                ngModelCtrl.$modelValue.push(item);
+              }
             };
 
             ctrl.unselectItem = scope.unselectItem = function(item) {
-              var items = ngModelCtrl.$modelValue;
-              var idx = items.indexOf(item);
+              if (ngModelCtrl.$modelValue != null) {
+                var items = ngModelCtrl.$modelValue;
+                var idx = items.indexOf(item);
 
-              if (idx > -1) {
-                items.splice(idx, 1);
+                if (idx > -1) {
+                  items.splice(idx, 1);
+                }
               }
+
             };
           },
           post: function(scope, element, attrs, ctrls) {
@@ -133,6 +143,6 @@ angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
     $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" /><multi-select-choices tabindex="-1" scroll-to></multi-select-choices>');
     $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="getItems().length"><li ng-repeat="item in getItems()">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
-    $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a href tabindex="-1" ng-click="choiceClicked(item)">{{item}}</a></li></ul>');
+    $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item)">{{item}}</a></li></ul>');
   }
 ]);
