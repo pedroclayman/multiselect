@@ -28,8 +28,14 @@ angular.module('multi-select').directive('multiSelectChoices', [
           _resetCurrentIndex();
 
           if (scope.options.closeOnSelect) {
-            console.log('closing');
             scope.options.isOpen = false;
+          }
+
+          if (scope.options.resetInput) {
+            scope.$apply(function() {
+              scope.resetInput();
+              console.log('reset');
+            });
           }
         }
 

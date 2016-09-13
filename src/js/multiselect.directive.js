@@ -65,7 +65,10 @@ angular.module('multi-select').directive('multiSelect', [
                   items.splice(idx, 1);
                 }
               }
+            };
 
+            ctrl.resetInput = scope.resetInput = function resetInput() {
+              scope.options.search = null;
             };
           },
           post: function(scope, element, attrs, ctrls) {
@@ -113,9 +116,17 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
             function _initialize() {
+              scope.options.closeOnSelect = true;
+              scope.options.resetInput = true;
+
               attrs.$observe('closeOnSelect',
                 function(newVal) {
                   scope.options.closeOnSelect = newVal == null ? true : scope.$eval(newVal);
+                });
+
+              attrs.$observe('resetInput',
+                function(newVal) {
+                  scope.options.resetInput = newVal == null ? true : scope.$eval(newVal);
                 });
             }
             var ngModelCtrl = ctrls[0];
