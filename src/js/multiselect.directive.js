@@ -12,7 +12,8 @@ angular.module('multi-select').directive('multiSelect', [
       templateUrl: 'multiSelect/main',
       require: ['ngModel', 'multiSelect'],
       scope: {
-        choices: '='
+        choices: '=',
+        model: '=ngModel'
       },
       controller: ['$scope', multiSelectDirectiveCtrl],
       compile: function() {
@@ -44,13 +45,13 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
             ctrl.selectItem = scope.selectItem = function(item) {
+
               if (ngModelCtrl.$modelValue == null) {
-                var setter = $parse(attrs.ngModel).assign;
-                setter(scope.$parent, [item]);
+                scope.model = [item];
               }
               else{
                 // todo error handling
-                ngModelCtrl.$modelValue.push(item);
+                scope.model.push(item);
               }
             };
 
