@@ -19,6 +19,7 @@ gulp.task('js', function(){
 gulp.task('sass', function(){
     return gulp.src(stylesGlob)
                .pipe(sass()) // Using gulp-sass
+               .pipe(gp_rename('multiselect.css'))
                .pipe(gulp.dest('dist'));
 });
 
