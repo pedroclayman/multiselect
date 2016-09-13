@@ -28,6 +28,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
           _resetCurrentIndex();
 
           if (scope.options.closeOnSelect) {
+            console.log('closing');
             scope.options.isOpen = false;
           }
         }
@@ -66,7 +67,8 @@ angular.module('multi-select').directive('multiSelectChoices', [
           }
         )
 
-        scope.choiceClicked = function(item) {
+        scope.choiceClicked = function(item, ev) {
+          // ev.originalEvent._clickInsideOfMultiselect = true;
           _selectItem(item);
         };
 
