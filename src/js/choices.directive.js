@@ -20,7 +20,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
         scope.filteredChoices = [];
 
         function _resetCurrentIndex() {
-          scope.currentIndex = scope.filteredChoices.length > 0 ? 0 : -1;
+          scope.currentIndex = scope.filteredChoices && scope.filteredChoices.length > 0 ? 0 : -1;
         }
 
         function _selectItem(item) {
@@ -33,9 +33,6 @@ angular.module('multi-select').directive('multiSelectChoices', [
 
           if (scope.options.resetInput) {
             scope.resetInput();
-            // scope.$apply(function() {
-            //   scope.resetInput();
-            // });
           }
         }
 

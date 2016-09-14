@@ -3,7 +3,7 @@ angular.module('multi-select').filter('unselected', [
   function unselectedFilter() {
 
     return function(items, selected) {
-      if (!selected) {
+      if (selected == null) {
         return items;
       }
 
