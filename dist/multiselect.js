@@ -133,9 +133,14 @@ angular.module('multi-select').directive('multiSelectChoices', [
           }
         };
 
-        scope.$watch('options.searchTerm',
-          function() {
-            _resetCurrentIndex();
+        scope.$watch('options.search',
+          function(newVal, oldVal) {
+            if (newVal !== oldVal) {
+              _resetCurrentIndex();
+              if (newVal && newVal.length) {
+                scope.options.isOpen = true;
+              }
+            }
           }
         )
 
