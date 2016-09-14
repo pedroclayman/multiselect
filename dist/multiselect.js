@@ -427,10 +427,12 @@ angular.module('multi-select').directive('multiSelectPills', [
         msCtrl.registerCtrl('pills', ctrl);
 
         ctrl.handleEvent = function(ev) {
+          var modelLength = scope.model ? scope.model.length : 0;
+
           switch (ev.keyCode) {
             case constants.KEY.LEFT:
                 if (scope.options.selectedPillIndex === -1) {
-                    scope.options.selectedPillIndex = scope.model.length - 1;
+                    scope.options.selectedPillIndex = modelLength - 1;
                 }
                 else if (scope.options.selectedPillIndex > 0) {
                   scope.options.selectedPillIndex--;
@@ -438,10 +440,10 @@ angular.module('multi-select').directive('multiSelectPills', [
 
               break;
             case constants.KEY.RIGHT:
-                if (scope.options.selectedPillIndex < scope.model.length - 1) {
+                if (scope.options.selectedPillIndex < modelLength - 1) {
                   scope.options.selectedPillIndex++;
                 }
-                else if (scope.options.selectedPillIndex === scope.model.length - 1) {
+                else if (scope.options.selectedPillIndex === modelLength - 1) {
                   scope.options.selectedPillIndex = -1;
                 }
               break;
@@ -449,7 +451,7 @@ angular.module('multi-select').directive('multiSelectPills', [
                 if (scope.options.selectedPillIndex > -1) {
                   scope.model.splice(scope.options.selectedPillIndex, 1);
 
-                  if (scope.model.length === 0) {
+                  if (modelLength === 0) {
                     scope.options.selectedPillIndex = -1
                   }
                   else if (scope.options.selectedPillIndex > 0) {
@@ -462,10 +464,10 @@ angular.module('multi-select').directive('multiSelectPills', [
                   if (scope.options.selectedPillIndex > -1) {
                     scope.model.splice(scope.options.selectedPillIndex, 1);
 
-                    if (scope.model.length === 0) {
+                    if (modelLength === 0) {
                       scope.options.selectedPillIndex = -1
                     }
-                    else if (scope.options.selectedPillIndex > scope.model.length - 1) {
+                    else if (scope.options.selectedPillIndex > modelLength - 1) {
                       scope.options.selectedPillIndex--;
                     }
                   }
