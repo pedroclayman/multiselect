@@ -75,11 +75,12 @@ angular.module('multi-select').directive('multiSelect', [
           },
           post: function(scope, element, attrs, ctrls) {
             function _dispatchKeyup(ev) {
+              console.log(ev.keyCode);
               // horizontal nav
               if(~[constants.KEY.LEFT, constants.KEY.RIGHT, constants.KEY.BACKSPACE, constants.KEY.DELETE].indexOf(ev.keyCode)) {
                 _registeredCtrls['pills'].handleEvent(ev);
               }
-              else if (~[constants.KEY.UP, constants.KEY.DOWN, constants.KEY.ENTER].indexOf(ev.keyCode)) {
+              else if (~[constants.KEY.UP, constants.KEY.DOWN, constants.KEY.ENTER, constants.KEY.ESC].indexOf(ev.keyCode)) {
                 _registeredCtrls['choices'].handleEvent(ev);
               }
               scope.$apply();

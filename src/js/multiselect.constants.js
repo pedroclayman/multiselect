@@ -7,6 +7,7 @@ angular.module('multi-select').constant('constants', {
     TAB: 9,
     BACKSPACE: 8,
     DELETE: 46,
-    ENTER: 13
+    ENTER: 13,
+    ESC: 27
   }
 });

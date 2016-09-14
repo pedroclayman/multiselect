@@ -103,6 +103,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
 
         ctrl.handleEvent = function(ev) {
           switch(ev.keyCode) {
+
             case constants.KEY.DOWN:
               if (!scope.options.isOpen) {
                 scope.options.isOpen = true;
@@ -115,16 +116,22 @@ angular.module('multi-select').directive('multiSelectChoices', [
                 });
               }
               break;
+
             case constants.KEY.UP:
               scope.currentIndex = scope.currentIndex-1 < 0 ? scope.filteredChoices.length - 1 : scope.currentIndex-1;
               $timeout(function() {
                 scrollToCtrl.scrollTo('.selected');
               });
               break;
+
             case constants.KEY.ENTER:
               if (scope.options.isOpen) {
                 _selectItem(scope.filteredChoices[scope.currentIndex]);
               }
+              break;
+
+            case constants.KEY.ESC:
+              scope.options.isOpen = false;
               break;
           }
         };
@@ -174,7 +181,8 @@ angular.module('multi-select').constant('constants', {
     TAB: 9,
     BACKSPACE: 8,
     DELETE: 46,
-    ENTER: 13
+    ENTER: 13,
+    ESC: 27
   }
 });
 
@@ -255,11 +263,12 @@ angular.module('multi-select').directive('multiSelect', [
           },
           post: function(scope, element, attrs, ctrls) {
             function _dispatchKeyup(ev) {
+              console.log(ev.keyCode);
               // horizontal nav
               if(~[constants.KEY.LEFT, constants.KEY.RIGHT, constants.KEY.BACKSPACE, constants.KEY.DELETE].indexOf(ev.keyCode)) {
                 _registeredCtrls['pills'].handleEvent(ev);
               }
-              else if (~[constants.KEY.UP, constants.KEY.DOWN, constants.KEY.ENTER].indexOf(ev.keyCode)) {
+              else if (~[constants.KEY.UP, constants.KEY.DOWN, constants.KEY.ENTER, constants.KEY.ESC].indexOf(ev.keyCode)) {
                 _registeredCtrls['choices'].handleEvent(ev);
               }
               scope.$apply();

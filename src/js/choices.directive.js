@@ -41,6 +41,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
 
         ctrl.handleEvent = function(ev) {
           switch(ev.keyCode) {
+
             case constants.KEY.DOWN:
               if (!scope.options.isOpen) {
                 scope.options.isOpen = true;
@@ -53,16 +54,22 @@ angular.module('multi-select').directive('multiSelectChoices', [
                 });
               }
               break;
+
             case constants.KEY.UP:
               scope.currentIndex = scope.currentIndex-1 < 0 ? scope.filteredChoices.length - 1 : scope.currentIndex-1;
               $timeout(function() {
                 scrollToCtrl.scrollTo('.selected');
               });
               break;
+
             case constants.KEY.ENTER:
               if (scope.options.isOpen) {
                 _selectItem(scope.filteredChoices[scope.currentIndex]);
               }
+              break;
+
+            case constants.KEY.ESC:
+              scope.options.isOpen = false;
               break;
           }
         };
