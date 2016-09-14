@@ -182,7 +182,9 @@ angular.module('multi-select').directive('multiSelect', [
   'constants', '$parse',
   function multiSelectDirective(constants, $parse) {
 
-
+    function hasEventPathProperty() {
+      return Event.prototype.hasOwnProperty('path');
+    }
 
     function multiSelectDirectiveCtrl() {
     }
@@ -263,13 +265,37 @@ angular.module('multi-select').directive('multiSelect', [
               scope.$apply();
             }
 
+            console.dir(Event);
+            console.log(Object.prototype.hasOwnProperty(Event, 'path'));
+
+            function _inputHandler(ev) {
+
+              if (!hasEventPathProperty()) {
+                if (ev.path == null) {
+                  ev.path = []
+                }
+                ev.path.push(element[0].querySelector('input'));
+              }
+            }
+
             function _elementHandler(ev) {
+              console.log('element', ev.path);
               function isClickOnInput() {
-                var input = element[0].querySelector('input');
-                var matches = ev.path.filter(function(pi) {
-                  return pi === input;
-                });
-                return matches.length > 0;
+                if (ev.path) {
+                  var input = element[0].querySelector('input');
+                  var matches = ev.path.filter(function(pi) {
+                    return pi === input;
+                  });
+                  return matches.length > 0;
+                }
+                return false;
+              }
+
+              if (!hasEventPathProperty()) {
+                if (ev.path == null) {
+                  ev.path = []
+                }
+                ev.path.push(element[0]);
               }
 
               if (!scope.options.isOpen && isClickOnInput()) {
@@ -280,12 +306,15 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
             function _bodyHandler(ev) {
+              console.log('body', ev.path);
               function isClickInside() {
-                var matches = ev.path.filter(function(pi) {
-                  return pi === element[0];
-                });
-                return matches.length > 0;
-                //return element[0].contains(ev.srcElement) /*|| ev.originalEvent._clickInsideOfMultiselect === true*/;
+                if (ev.path) {
+                  var matches = ev.path.filter(function(pi) {
+                    return pi === element[0];
+                  });
+                  return matches.length > 0;
+                }
+                return false;
               }
 
               if (scope.options.isOpen !== false && !isClickInside()) {
@@ -320,7 +349,8 @@ angular.module('multi-select').directive('multiSelect', [
 
             // click on input
             var searchEl = element[0].querySelector('input[type=search]');
-            //searchEl.addEventListener('click', _handleInputClick);
+            searchEl.addEventListener('click', _inputHandler);
+            searchEl.addEventListener('focusin', _inputHandler);
 
             element[0].addEventListener('click', _elementHandler);
             element[0].addEventListener('focusin', _elementHandler);
@@ -333,6 +363,8 @@ angular.module('multi-select').directive('multiSelect', [
             // bodyEl.addEventListener('focusin', _handleBodyFocus);
 
             scope.$on('$destroy', function() {
+              searchEl.removeEventListener('click', _inputHandler);
+              searchEl.removeEventListener('focusin', _inputHandler);
               element[0].removeEventListener('keydown', _dispatchKeyup);
               element[0].removeEventListener('focusin', _elementHandler);
               element[0].removeEventListener('click', _elementHandler);
