@@ -139,7 +139,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
               _resetCurrentIndex();
               if (newVal && newVal.length) {
                 scope.options.isOpen = true;
-              }
+              } 
             }
           }
         )
@@ -172,6 +172,20 @@ angular.module('multi-select').filter('unselected', [
     }
   }
 ]);
+
+angular.module('multi-select').directive('fill', [
+
+  function fillDirective() {
+
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs, ctrls) {
+
+
+      }
+    }
+  }
+])
 
 angular.module('multi-select').constant('constants', {
   KEY: {

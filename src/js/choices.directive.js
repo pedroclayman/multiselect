@@ -77,7 +77,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
               _resetCurrentIndex();
               if (newVal && newVal.length) {
                 scope.options.isOpen = true;
-              }
+              } 
             }
           }
         )
