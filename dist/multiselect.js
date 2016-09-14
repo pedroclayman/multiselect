@@ -250,7 +250,7 @@ angular.module('multi-select').directive('multiSelect', [
             };
 
             ctrl.resetInput = scope.resetInput = function resetInput() {
-              scope.options.search = null;
+              scope.options.search = '';
             };
           },
           post: function(scope, element, attrs, ctrls) {
@@ -362,8 +362,11 @@ angular.module('multi-select').directive('multiSelect', [
             var ngModelCtrl = ctrls[0];
             var ctrl = ctrls[1];
 
-            scope.options = {};
-            scope.options.selectedPillIndex = -1;
+            scope.options = {
+              selectedPillIndex : -1,
+              search: ''
+            };
+
             _initialize(attrs);
 
             // keystokes
