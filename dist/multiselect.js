@@ -295,8 +295,16 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
             function _inputKeyDownHandler(ev) {
-              if (input.selectionStart == 0 && scope.options.selectedPillIndex !== -1) {
+              if (~[constants.KEY.LEFT, constants.KEY.RIGHT].indexOf(ev.keyCode) &&
+                  input.selectionStart == 0 &&
+                  scope.options.selectedPillIndex !== -1) {
                 ev.preventDefault();
+              }
+
+              if (~[constants.KEY.TAB].indexOf(ev.keyCode)) {
+                scope.$apply(function() {
+                  scope.options.selectedPillIndex = -1;
+                })
               }
             }
 
