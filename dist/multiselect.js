@@ -445,6 +445,32 @@ angular.module('multi-select').directive('multiSelectPills', [
                   scope.options.selectedPillIndex = -1;
                 }
               break;
+            case constants.KEY.BACKSPACE:
+                if (scope.options.selectedPillIndex > -1) {
+                  scope.model.splice(scope.options.selectedPillIndex, 1);
+
+                  if (scope.model.length === 0) {
+                    scope.options.selectedPillIndex = -1
+                  }
+                  else if (scope.options.selectedPillIndex > 0) {
+                    scope.options.selectedPillIndex--;
+                  }
+
+                }
+              break;
+              case constants.KEY.DELETE:
+                  if (scope.options.selectedPillIndex > -1) {
+                    scope.model.splice(scope.options.selectedPillIndex, 1);
+
+                    if (scope.model.length === 0) {
+                      scope.options.selectedPillIndex = -1
+                    }
+                    else if (scope.options.selectedPillIndex > scope.model.length - 1) {
+                      scope.options.selectedPillIndex--;
+                    }
+                  }
+                break;
+
           }
         }
 
