@@ -22,5 +22,7 @@ multi-select {
       display: inline-block;
       border: 1px solid gray;
       padding: 2px 5px; }
+      multi-select .pills li.selected {
+        background-color: red; }
   multi-select input {
     width: 100%; }

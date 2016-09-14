@@ -74,10 +74,21 @@ angular.module('multi-select').directive('multiSelect', [
             };
           },
           post: function(scope, element, attrs, ctrls) {
+            var input = element[0].querySelector('input[type=search]');
+
             function _dispatchKeyup(ev) {
-              console.log(ev.keyCode);
               // horizontal nav
-              if(~[constants.KEY.LEFT, constants.KEY.RIGHT, constants.KEY.BACKSPACE, constants.KEY.DELETE].indexOf(ev.keyCode)) {
+              if (~[constants.KEY.LEFT].indexOf(ev.keyCode)) {
+                if (input.selectionStart == 0) {
+                  _registeredCtrls['pills'].handleEvent(ev);
+                }
+              }
+              else if (~[constants.KEY.RIGHT].indexOf(ev.keyCode)) {
+                if (input.selectionStart == 0 && scope.options.selectedPillIndex !== -1) {
+                  _registeredCtrls['pills'].handleEvent(ev);
+                }
+              }
+              else if(~[constants.KEY.BACKSPACE, constants.KEY.DELETE].indexOf(ev.keyCode)) {
                 _registeredCtrls['pills'].handleEvent(ev);
               }
               else if (~[constants.KEY.UP, constants.KEY.DOWN, constants.KEY.ENTER, constants.KEY.ESC].indexOf(ev.keyCode)) {
@@ -86,24 +97,25 @@ angular.module('multi-select').directive('multiSelect', [
               scope.$apply();
             }
 
-            console.dir(Event);
-            console.log(Object.prototype.hasOwnProperty(Event, 'path'));
-
             function _inputHandler(ev) {
 
               if (!hasEventPathProperty()) {
                 if (ev.path == null) {
                   ev.path = []
                 }
-                ev.path.push(element[0].querySelector('input'));
+                ev.path.push(input);
+              }
+            }
+
+            function _inputKeyDownHandler(ev) {
+              if (input.selectionStart == 0 && scope.options.selectedPillIndex !== -1) {
+                ev.preventDefault();
               }
             }
 
             function _elementHandler(ev) {
-              console.log('element', ev.path);
               function isClickOnInput() {
                 if (ev.path) {
-                  var input = element[0].querySelector('input');
                   var matches = ev.path.filter(function(pi) {
                     return pi === input;
                   });
@@ -127,7 +139,6 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
             function _bodyHandler(ev) {
-              console.log('body', ev.path);
               function isClickInside() {
                 if (ev.path) {
                   var matches = ev.path.filter(function(pi) {
@@ -144,6 +155,7 @@ angular.module('multi-select').directive('multiSelect', [
                 });
               }
             }
+
 
             function _initialize() {
               scope.options.closeOnSelect = true;
@@ -163,15 +175,16 @@ angular.module('multi-select').directive('multiSelect', [
             var ctrl = ctrls[1];
 
             scope.options = {};
+            scope.options.selectedPillIndex = -1;
             _initialize(attrs);
 
             // keystokes
             element[0].addEventListener('keydown', _dispatchKeyup);
 
             // click on input
-            var searchEl = element[0].querySelector('input[type=search]');
-            searchEl.addEventListener('click', _inputHandler);
-            searchEl.addEventListener('focusin', _inputHandler);
+            input.addEventListener('click', _inputHandler);
+            input.addEventListener('focusin', _inputHandler);
+            input.addEventListener('keydown', _inputKeyDownHandler);
 
             element[0].addEventListener('click', _elementHandler);
             element[0].addEventListener('focusin', _elementHandler);
@@ -184,8 +197,10 @@ angular.module('multi-select').directive('multiSelect', [
             // bodyEl.addEventListener('focusin', _handleBodyFocus);
 
             scope.$on('$destroy', function() {
-              searchEl.removeEventListener('click', _inputHandler);
-              searchEl.removeEventListener('focusin', _inputHandler);
+              input.removeEventListener('click', _inputHandler);
+              input.removeEventListener('focusin', _inputHandler);
+              input.removeEventListener('keydown', _inputKeyDownHandler);
+
               element[0].removeEventListener('keydown', _dispatchKeyup);
               element[0].removeEventListener('focusin', _elementHandler);
               element[0].removeEventListener('click', _elementHandler);
@@ -203,7 +218,7 @@ angular.module('multi-select').directive('multiSelect', [
 angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
     $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" placeholder="{{placeholder}}" /><multi-select-choices tabindex="-1" scroll-to></multi-select-choices>');
-    $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="getItems().length"><li ng-repeat="item in getItems()">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
+    $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="getItems().length"><li ng-class="{\'selected\' : $index === options.selectedPillIndex }" ng-repeat="item in getItems()">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
     $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : getItems() as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item, $event)">{{item}}</a></li></ul>');
   }
 ]);

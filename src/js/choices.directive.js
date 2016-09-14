@@ -32,10 +32,10 @@ angular.module('multi-select').directive('multiSelectChoices', [
           }
 
           if (scope.options.resetInput) {
-            scope.$apply(function() {
-              scope.resetInput();
-              console.log('reset');
-            });
+            scope.resetInput();
+            // scope.$apply(function() {
+            //   scope.resetInput();
+            // });
           }
         }
 
@@ -81,7 +81,6 @@ angular.module('multi-select').directive('multiSelectChoices', [
         )
 
         scope.choiceClicked = function(item, ev) {
-          // ev.originalEvent._clickInsideOfMultiselect = true;
           _selectItem(item);
         };
 

@@ -15,7 +15,9 @@ angular.module('multi-select').directive('scrollTo', [
 
         ctrl.scrollTo = function(itemSelector) {
           var scrollToEl = element[0].querySelector(itemSelector);
-          scrollToEl.scrollIntoViewIfNeeded();
+          if (scrollToEl) {
+            scrollToEl.scrollIntoViewIfNeeded();
+          }
         }
       }
     }

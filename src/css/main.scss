@@ -35,6 +35,10 @@ multi-select {
       display: inline-block;
       border: 1px solid gray;
       padding: 2px 5px;
+
+      &.selected {
+        background-color: red;
+      }
     }
   }
 
