@@ -1,5 +1,6 @@
 multi-select {
-  display: inline-block;
+
+  display: block;
   border: 1px solid gray;
   padding: 2px 5px;
 
@@ -30,7 +31,7 @@ multi-select {
   .pills {
     margin: 0;
     padding: 0;
-    display: inline-block;
+    display: inline;
 
     li {
       display: inline-block;

@@ -19,7 +19,8 @@ angular.module('multi-select').directive('multiSelect', [
         model: '=ngModel'
       },
       controller: ['$scope', multiSelectDirectiveCtrl],
-      compile: function() {
+      compile: function(tElement, tAttrs) {
+
         var _registeredCtrls = [];
 
         return {
@@ -221,6 +222,49 @@ angular.module('multi-select').directive('multiSelect', [
     }
   }
 ]);
+
+angular.module('multi-select').directive('multiSelect', [
+  'resizeSensor', '$window',
+  function fillBehaviourMultiSelectDirective(resizeSensor, $window) {
+    return {
+      link: function(scope, element, attrs, ctrls) {
+        var treshold = 50;
+        var input = element[0].querySelector('input[type=search]');
+
+        function recomputeWidth() {
+          var lis = element[0].querySelectorAll('.pills li');
+          if (lis.length > 0) {
+            var lastPill = lis[lis.length - 1];
+            var mspRect = element[0].querySelector('.pills').getBoundingClientRect();
+            var lpRect = lastPill.getBoundingClientRect();
+
+            var availableWidth = parseFloat($window.getComputedStyle(element[0]).width);
+            var right = lpRect.right - mspRect.left;
+
+            if (availableWidth - right > treshold) {
+              input.style.width = (availableWidth - right) + 'px';
+            }
+            else {
+              input.style.width = '100%';
+            }
+
+          }
+          else {
+            input.style.width = '100%';
+          }
+        }
+
+        resizeSensor(element[0], recomputeWidth);
+
+        scope.$on('$destroy', function() {
+          resizeSensor.detach(element[0], recomputeWidth);
+        });
+
+      }
+    }
+  }
+]);
+
 
 angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
