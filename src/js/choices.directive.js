@@ -21,6 +21,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
 
         var choicesEl =  element[0].querySelector('.multi-select-choices');
         var msEl = element[0].parentElement;
+        var inputEl = msEl.querySelector('input[type=search]');
         var bodyEl = document.querySelector('body');
 
         scope.currentIndex = 0;
@@ -127,9 +128,8 @@ angular.module('multi-select').directive('multiSelectChoices', [
             }
             ev.path.push(choicesEl);
           }
+          inputEl.focus();
         }
-
-
 
         scope.$on('$destroy', function() {
           choicesEl.removeEventListener('focusin', _choiceHandler);
