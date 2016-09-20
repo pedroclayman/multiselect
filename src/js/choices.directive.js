@@ -105,12 +105,18 @@ angular.module('multi-select').directive('multiSelectChoices', [
               if (newVal) {
 
                 choicesEl.style.width = msEl.clientWidth + 'px';
-                bodyEl.appendChild(choicesEl);
+
                 var elRect = msEl.getBoundingClientRect();
-                var offsetBottom = parseFloat(window.getComputedStyle(msEl).paddingBottom) + parseFloat(window.getComputedStyle(msEl).borderBottom);
-                var offsetLeft = parseFloat(window.getComputedStyle(msEl).paddingLeft) + parseFloat(window.getComputedStyle(msEl).borderLeft);
-                choicesEl.style.left = elRect.left + offsetLeft + 'px';
-                choicesEl.style.top = elRect.bottom + offsetBottom + 'px';
+
+
+                var offsetBottom = (parseFloat(window.getComputedStyle(msEl).paddingBottom) || 0) + (parseFloat(window.getComputedStyle(msEl).borderBottom) || 0);
+                var offsetLeft = (parseFloat(window.getComputedStyle(msEl).paddingLeft) || 0) + (parseFloat(window.getComputedStyle(msEl).borderLeft) || 0);
+
+
+                choicesEl.style.left = (elRect.left + offsetLeft) + 'px';
+                choicesEl.style.top = (elRect.bottom + offsetBottom) + 'px';
+
+                bodyEl.appendChild(choicesEl);
 
                 choicesEl.addEventListener('focusin', _choiceHandler);
               }
