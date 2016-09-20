@@ -106,6 +106,12 @@ angular.module('multi-select').directive('multiSelectChoices', [
 
                 choicesEl.style.width = msEl.clientWidth + 'px';
                 bodyEl.appendChild(choicesEl);
+                var elRect = msEl.getBoundingClientRect();
+                var offsetBottom = parseFloat(window.getComputedStyle(msEl).paddingBottom) + parseFloat(window.getComputedStyle(msEl).borderBottom);
+                var offsetLeft = parseFloat(window.getComputedStyle(msEl).paddingLeft) + parseFloat(window.getComputedStyle(msEl).borderLeft);
+                choicesEl.style.left = elRect.left + offsetLeft + 'px';
+                choicesEl.style.top = elRect.bottom + offsetBottom + 'px';
+
                 choicesEl.addEventListener('focusin', _choiceHandler);
               }
               else {
