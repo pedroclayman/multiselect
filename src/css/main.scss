@@ -1,8 +1,6 @@
 multi-select {
 
   display: block;
-  border: 1px solid gray;
-  padding: 2px 5px;
 
   multi-select-choices {
     .choices {
@@ -48,5 +46,6 @@ multi-select {
   input {
     border: none;
     min-width: 50px;
+    width: 100%;
   }
 }
