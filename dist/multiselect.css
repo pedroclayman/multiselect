@@ -1,19 +1,23 @@
 multi-select {
-  display: block;
-  padding: 2px 5px; }
-  multi-select multi-select-choices .choices {
-    display: block;
-    margin: 0;
-    padding: 0;
-    border: 1px solid gray;
-    border-top: none;
-    max-height: 100px;
-    overflow-y: auto; }
-    multi-select multi-select-choices .choices li {
+  display: block; }
+  multi-select multi-select-choices {
+    position: relative; }
+    multi-select multi-select-choices .choices {
+      background-color: white;
       display: block;
-      padding: 2px 5px; }
-      multi-select multi-select-choices .choices li.selected a {
-        color: red; }
+      position: absolute;
+      margin: 0;
+      padding: 0;
+      border: 1px solid gray;
+      border-top: none;
+      max-height: 100px;
+      overflow-y: auto;
+      z-index: 1; }
+      multi-select multi-select-choices .choices li {
+        display: block;
+        padding: 2px 5px; }
+        multi-select multi-select-choices .choices li.selected a {
+          color: red; }
   multi-select .pills {
     margin: 0;
     padding: 0;

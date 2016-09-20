@@ -16,6 +16,8 @@ angular.module('multi-select').directive('multiSelectChoices', [
 
         msCtrl.registerCtrl('choices', ctrl);
 
+        var choicesEl =  element[0].querySelector('.choices');
+
         scope.currentIndex = 0;
         scope.filteredChoices = [];
 
@@ -77,7 +79,19 @@ angular.module('multi-select').directive('multiSelectChoices', [
               _resetCurrentIndex();
               if (newVal && newVal.length) {
                 scope.options.isOpen = true;
-              } 
+              }
+            }
+          }
+        )
+
+        var msEl = element[0].parentElement;
+
+        scope.$watch('options.isOpen',
+          function(newVal, oldVal) {
+            if (newVal) {
+              $timeout(function() {
+                choicesEl.style.width = msEl.clientWidth + 'px';
+              });
             }
           }
         )

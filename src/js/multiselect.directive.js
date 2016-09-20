@@ -197,12 +197,8 @@ angular.module('multi-select').directive('multiSelect', [
             element[0].addEventListener('click', _elementHandler);
             element[0].addEventListener('focusin', _elementHandler);
 
-            var bodyEl = document.querySelector('body');
-            bodyEl.addEventListener('focusin', _bodyHandler);
-            bodyEl.addEventListener('click', _bodyHandler);
-
-            // var bodyEl = document.querySelector('body');
-            // bodyEl.addEventListener('focusin', _handleBodyFocus);
+            document.addEventListener('focusin', _bodyHandler);
+            document.addEventListener('click', _bodyHandler);
 
             scope.$on('$destroy', function() {
               input.removeEventListener('click', _inputHandler);
@@ -212,8 +208,8 @@ angular.module('multi-select').directive('multiSelect', [
               element[0].removeEventListener('keydown', _dispatchKeyup);
               element[0].removeEventListener('focusin', _elementHandler);
               element[0].removeEventListener('click', _elementHandler);
-              bodyEl.removeEventListener('focusin', _bodyHandler);
-              bodyEl.removeEventListener('click', _bodyHandler);
+              document.removeEventListener('focusin', _bodyHandler);
+              document.removeEventListener('click', _bodyHandler);
 
             });
           }
