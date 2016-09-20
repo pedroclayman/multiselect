@@ -1,35 +1,6 @@
 multi-select {
   display: block;
 
-  multi-select-choices {
-    position: relative;
-    .choices {
-      background-color: white;
-      display: block;
-      position: absolute;
-      margin: 0;
-      padding: 0;
-      border: 1px solid gray;
-      border-top: none;
-      max-height: 100px;
-      overflow-y: auto;
-      z-index: 1;
-
-
-      li {
-        display: block;
-        padding: 2px 5px;
-
-        &.selected {
-
-          a {
-            color: red;
-          }
-        }
-      }
-    }
-  }
-
   .pills {
     margin: 0;
     padding: 0;
@@ -51,5 +22,31 @@ multi-select {
     border: none;
     min-width: 50px;
     width: 100%;
+  }
+}
+
+.multi-select-choices {
+  background-color: white;
+  display: block;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 1px solid gray;
+  border-top: none;
+  max-height: 100px;
+  overflow-y: auto;
+  z-index: 1;
+
+
+  li {
+    display: block;
+    padding: 2px 5px;
+
+    &.selected {
+
+      a {
+        color: red;
+      }
+    }
   }
 }

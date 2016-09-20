@@ -63,22 +63,27 @@ if (!Element.prototype.scrollIntoViewIfNeeded) {
 angular.module('multi-select').directive('multiSelectChoices', [
   'constants', '$timeout',
   function multiSelectChoicesDirective(constants, $timeout) {
+    function hasEventPathProperty() {
+      return Event.prototype.hasOwnProperty('path');
+    }
+
     function multiSelectChoicesCtrl(scope) {
     }
 
     return {
       restrict: 'E',
-      require: ['^multiSelect', 'multiSelectChoices', 'scrollTo'],
+      require: ['^multiSelect', 'multiSelectChoices'],
       templateUrl: 'multiSelect/choices',
       scope: true,
       link: function (scope, element, attrs, ctrls) {
         var msCtrl = ctrls[0];
         var ctrl = ctrls[1];
-        var scrollToCtrl = ctrls[2];
 
         msCtrl.registerCtrl('choices', ctrl);
 
-        var choicesEl =  element[0].querySelector('.choices');
+        var choicesEl =  element[0].querySelector('.multi-select-choices');
+        var msEl = element[0].parentElement;
+        var bodyEl = document.querySelector('body');
 
         scope.currentIndex = 0;
         scope.filteredChoices = [];
@@ -100,6 +105,13 @@ angular.module('multi-select').directive('multiSelectChoices', [
           }
         }
 
+        function _scrollTo(itemSelector) {
+          var scrollToEl = choicesEl.querySelector(itemSelector);
+          if (scrollToEl) {
+            scrollToEl.scrollIntoViewIfNeeded();
+          }
+        }
+
         ctrl.handleEvent = function(ev) {
           switch(ev.keyCode) {
 
@@ -111,7 +123,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
               else {
                 scope.currentIndex = (scope.currentIndex+1) % scope.filteredChoices.length;
                 $timeout(function() {
-                  scrollToCtrl.scrollTo('.selected');
+                  _scrollTo('.selected');
                 });
               }
               break;
@@ -119,7 +131,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
             case constants.KEY.UP:
               scope.currentIndex = scope.currentIndex-1 < 0 ? scope.filteredChoices.length - 1 : scope.currentIndex-1;
               $timeout(function() {
-                scrollToCtrl.scrollTo('.selected');
+                _scrollTo('.selected');
               });
               break;
 
@@ -146,15 +158,23 @@ angular.module('multi-select').directive('multiSelectChoices', [
           }
         )
 
-        var msEl = element[0].parentElement;
+
 
         scope.$watch('options.isOpen',
           function(newVal, oldVal) {
-            if (newVal) {
-              $timeout(function() {
+            if (newVal !== oldVal) {
+              if (newVal) {
+
                 choicesEl.style.width = msEl.clientWidth + 'px';
-              });
+                bodyEl.appendChild(choicesEl);
+                choicesEl.addEventListener('focusin', _choiceHandler);
+              }
+              else {
+                choicesEl.removeEventListener('focusin', _choiceHandler);
+                element[0].appendChild(choicesEl);
+              }
             }
+
           }
         )
 
@@ -162,7 +182,19 @@ angular.module('multi-select').directive('multiSelectChoices', [
           _selectItem(item);
         };
 
+        function _choiceHandler(ev) {
+          if (!hasEventPathProperty()) {
+            if (ev.path == null) {
+              ev.path = []
+            }
+            ev.path.push(choicesEl);
+          }
+        }
+
+
+
         scope.$on('$destroy', function() {
+          choicesEl.removeEventListener('focusin', _choiceHandler);
           msCtrl.unregisterCtrl('choices');
         });
       },
@@ -297,16 +329,6 @@ angular.module('multi-select').directive('multiSelect', [
               scope.$apply();
             }
 
-            function _inputHandler(ev) {
-
-              if (!hasEventPathProperty()) {
-                if (ev.path == null) {
-                  ev.path = []
-                }
-                ev.path.push(input);
-              }
-            }
-
             function _inputKeyDownHandler(ev) {
               if (~[constants.KEY.LEFT, constants.KEY.RIGHT].indexOf(ev.keyCode) &&
                   input.selectionStart == 0 &&
@@ -318,6 +340,15 @@ angular.module('multi-select').directive('multiSelect', [
                 scope.$apply(function() {
                   scope.options.selectedPillIndex = -1;
                 })
+              }
+            }
+
+            function _inputHandler(ev) {
+              if (!hasEventPathProperty()) {
+                if (ev.path == null) {
+                  ev.path = []
+                }
+                ev.path.push(input);
               }
             }
 
@@ -350,7 +381,7 @@ angular.module('multi-select').directive('multiSelect', [
               function isClickInside() {
                 if (ev.path) {
                   var matches = ev.path.filter(function(pi) {
-                    return pi === element[0];
+                    return pi === element[0] || (pi.classList && pi.classList.contains('multi-select-choices'));
                   });
                   return matches.length > 0;
                 }
@@ -469,7 +500,7 @@ angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
     $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" placeholder="{{placeholder}}" /><multi-select-choices tabindex="-1" scroll-to></multi-select-choices>');
     $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="model != null && model.length"><li ng-class="{\'selected\' : $index === options.selectedPillIndex }" ng-repeat="item in model">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
-    $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : model as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item, $event)">{{item}}</a></li></ul>');
+    $templateCache.put('multiSelect/choices', '<ul class="multi-select-choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : model as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item, $event)">{{item}}</a></li></ul>');
   }
 ]);
 
@@ -760,30 +791,4 @@ angular.module('multi-select').factory('resizeSensor', [
 
   }
 
-]);
-
-angular.module('multi-select').directive('scrollTo', [
-
-  function scrollToDirective() {
-
-    function scrollToController() {
-    }
-
-    return {
-      restrict: 'A',
-      scope: false,
-      require: ['scrollTo'],
-      controller: [scrollToController],
-      link: function(scope, element, attrs, ctrls) {
-        var ctrl = ctrls[0];
-
-        ctrl.scrollTo = function(itemSelector) {
-          var scrollToEl = element[0].querySelector(itemSelector);
-          if (scrollToEl) {
-            scrollToEl.scrollIntoViewIfNeeded();
-          }
-        }
-      }
-    }
-  }
 ]);

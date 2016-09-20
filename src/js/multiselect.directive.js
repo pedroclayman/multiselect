@@ -94,16 +94,6 @@ angular.module('multi-select').directive('multiSelect', [
               scope.$apply();
             }
 
-            function _inputHandler(ev) {
-
-              if (!hasEventPathProperty()) {
-                if (ev.path == null) {
-                  ev.path = []
-                }
-                ev.path.push(input);
-              }
-            }
-
             function _inputKeyDownHandler(ev) {
               if (~[constants.KEY.LEFT, constants.KEY.RIGHT].indexOf(ev.keyCode) &&
                   input.selectionStart == 0 &&
@@ -115,6 +105,15 @@ angular.module('multi-select').directive('multiSelect', [
                 scope.$apply(function() {
                   scope.options.selectedPillIndex = -1;
                 })
+              }
+            }
+
+            function _inputHandler(ev) {
+              if (!hasEventPathProperty()) {
+                if (ev.path == null) {
+                  ev.path = []
+                }
+                ev.path.push(input);
               }
             }
 
@@ -147,7 +146,7 @@ angular.module('multi-select').directive('multiSelect', [
               function isClickInside() {
                 if (ev.path) {
                   var matches = ev.path.filter(function(pi) {
-                    return pi === element[0];
+                    return pi === element[0] || (pi.classList && pi.classList.contains('multi-select-choices'));
                   });
                   return matches.length > 0;
                 }
@@ -266,6 +265,6 @@ angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
     $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" placeholder="{{placeholder}}" /><multi-select-choices tabindex="-1" scroll-to></multi-select-choices>');
     $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="model != null && model.length"><li ng-class="{\'selected\' : $index === options.selectedPillIndex }" ng-repeat="item in model">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
-    $templateCache.put('multiSelect/choices', '<ul class="choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : model as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item, $event)">{{item}}</a></li></ul>');
+    $templateCache.put('multiSelect/choices', '<ul class="multi-select-choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : model as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item, $event)">{{item}}</a></li></ul>');
   }
 ]);
