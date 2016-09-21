@@ -75,7 +75,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
               break;
 
             case constants.KEY.ENTER:
-              if (scope.options.isOpen) {
+              if (scope.options.isOpen && scope.currentIndex > -1) {
                 _selectItem(scope.filteredChoices[scope.currentIndex]);
               }
               break;
