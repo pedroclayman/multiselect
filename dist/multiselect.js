@@ -185,7 +185,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
                   $timeout(function() {
                     _recomputePosition();
                   });
-                });
+                }, true);
               }
               else {
                 if (unregisterModelWatch != null) {
