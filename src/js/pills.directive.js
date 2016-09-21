@@ -40,9 +40,9 @@ angular.module('multi-select').directive('multiSelectPills', [
                   scope.model.splice(scope.options.selectedPillIndex, 1);
 
                   if (modelLength === 0) {
-                    scope.options.selectedPillIndex = -1
+                    scope.options.selectedPillIndex = -1;
                   }
-                  else if (scope.options.selectedPillIndex > 0) {
+                  else {
                     scope.options.selectedPillIndex--;
                   }
 
@@ -55,7 +55,7 @@ angular.module('multi-select').directive('multiSelectPills', [
                     if (modelLength === 0) {
                       scope.options.selectedPillIndex = -1
                     }
-                    else if (scope.options.selectedPillIndex > modelLength - 1) {
+                    else {
                       scope.options.selectedPillIndex--;
                     }
                   }
