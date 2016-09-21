@@ -120,7 +120,6 @@ angular.module('multi-select').directive('multiSelectChoices', [
                 choicesEl.addEventListener('focusin', _choiceHandler);
 
                 unregisterModelWatch = scope.$watch('model', function() {
-                  console.log('model has changed');
                   $timeout(function() {
                     _recomputePosition();
                   });

@@ -1,5 +1,8 @@
+$lightColor: #ffffff;
+
 multi-select {
   display: block;
+  background-color: $lightColor;
 
   .pills {
     margin: 0;

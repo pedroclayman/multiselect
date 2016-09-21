@@ -1,6 +1,6 @@
 angular.module('multi-select').directive('multiSelect', [
-  'constants', '$parse',
-  function multiSelectDirective(constants, $parse) {
+  'constants', '$parse', '$timeout', 'resizeSensor', '$window',
+  function multiSelectDirective(constants, $parse, $timeout, resizeSensor, $window) {
 
     function hasEventPathProperty() {
       return Event.prototype.hasOwnProperty('path');
@@ -76,6 +76,12 @@ angular.module('multi-select').directive('multiSelect', [
           post: function(scope, element, attrs, ctrls) {
             var ngModelCtrl = ctrls[0];
             var ctrl = ctrls[1];
+
+            scope.options = {
+              selectedPillIndex : -1,
+              search: '',
+              isOpen: false
+            };
 
             var input = element[0].querySelector('input[type=search]');
 
@@ -183,6 +189,56 @@ angular.module('multi-select').directive('multiSelect', [
 
             }
 
+            function _recomputeInputWidth() {
+              var lis = element[0].querySelectorAll('.pills li');
+              if (lis.length > 0) {
+                var treshold = 50;
+                var lastPill = lis[lis.length - 1];
+                var mspRect = element[0].querySelector('.pills').getBoundingClientRect();
+                var lpRect = lastPill.getBoundingClientRect();
+
+                var availableWidth = parseFloat($window.getComputedStyle(element[0]).width);
+                var right = lpRect.right - mspRect.left;
+
+                if (availableWidth - right > treshold) {
+                  input.style.width = (availableWidth - right) + 'px';
+                }
+                else {
+                  input.style.width = '100%';
+                }
+
+              }
+              else {
+                input.style.width = '100%';
+              }
+            }
+
+            scope.$watch(function() {
+                return element[0].offsetParent != null;
+              },
+              function(newVal, oldVal) {
+
+                $timeout(function() {
+                  if (newVal) {
+                    resizeSensor(element[0], _recomputeInputWidth);
+                  }
+                  else {
+                    resizeSensor.detach(element[0], _recomputeInputWidth);
+                  }
+                });
+              }
+            );
+
+            scope.$watch('model',
+              function(newVal, oldVal) {
+                if (newVal !== oldVal) {
+                  $timeout(function() {
+                    _recomputeInputWidth();
+                  });
+                }
+            }, true);
+
+
             scope.resolveAbbrevationByItem = function(item) {
               if (attrs.abbrevationKey) {
                 var getter = $parse(attrs.abbrevationKey);
@@ -238,11 +294,6 @@ angular.module('multi-select').directive('multiSelect', [
               return null;
             }
 
-            scope.options = {
-              selectedPillIndex : -1,
-              search: ''
-            };
-
             _initialize(attrs);
 
             // keystokes
@@ -270,6 +321,8 @@ angular.module('multi-select').directive('multiSelect', [
               document.removeEventListener('focusin', _bodyHandler);
               document.removeEventListener('click', _bodyHandler);
 
+              resizeSensor.detach(element[0], recomputeWidth);
+
             });
           }
         }
@@ -278,47 +331,6 @@ angular.module('multi-select').directive('multiSelect', [
   }
 ]);
 
-angular.module('multi-select').directive('multiSelect', [
-  'resizeSensor', '$window',
-  function fillBehaviourMultiSelectDirective(resizeSensor, $window) {
-    return {
-      link: function(scope, element, attrs, ctrls) {
-        var treshold = 50;
-        var input = element[0].querySelector('input[type=search]');
-
-        function recomputeWidth() {
-          var lis = element[0].querySelectorAll('.pills li');
-          if (lis.length > 0) {
-            var lastPill = lis[lis.length - 1];
-            var mspRect = element[0].querySelector('.pills').getBoundingClientRect();
-            var lpRect = lastPill.getBoundingClientRect();
-
-            var availableWidth = parseFloat($window.getComputedStyle(element[0]).width);
-            var right = lpRect.right - mspRect.left;
-
-            if (availableWidth - right > treshold) {
-              input.style.width = (availableWidth - right) + 'px';
-            }
-            else {
-              input.style.width = '100%';
-            }
-
-          }
-          else {
-            input.style.width = '100%';
-          }
-        }
-
-        resizeSensor(element[0], recomputeWidth);
-
-        scope.$on('$destroy', function() {
-          resizeSensor.detach(element[0], recomputeWidth);
-        });
-
-      }
-    }
-  }
-]);
 
 
 angular.module('multi-select').run(['$templateCache',
