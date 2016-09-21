@@ -97,30 +97,41 @@ angular.module('multi-select').directive('multiSelectChoices', [
           }
         )
 
+        function _recomputePosition() {
+          choicesEl.style.width = msEl.clientWidth + 'px';
 
+          var elRect = msEl.getBoundingClientRect();
+
+          var offsetBottom = (parseFloat(window.getComputedStyle(msEl).paddingBottom) || 0) + (parseFloat(window.getComputedStyle(msEl).borderBottom) || 0);
+          var offsetLeft = (parseFloat(window.getComputedStyle(msEl).paddingLeft) || 0) + (parseFloat(window.getComputedStyle(msEl).borderLeft) || 0);
+
+          choicesEl.style.left = (elRect.left + offsetLeft) + 'px';
+          choicesEl.style.top = (elRect.bottom + offsetBottom) + 'px';
+        }
+
+        var unregisterModelWatch;
 
         scope.$watch('options.isOpen',
           function(newVal, oldVal) {
             if (newVal !== oldVal) {
               if (newVal) {
-
-                choicesEl.style.width = msEl.clientWidth + 'px';
-
-                var elRect = msEl.getBoundingClientRect();
-
-
-                var offsetBottom = (parseFloat(window.getComputedStyle(msEl).paddingBottom) || 0) + (parseFloat(window.getComputedStyle(msEl).borderBottom) || 0);
-                var offsetLeft = (parseFloat(window.getComputedStyle(msEl).paddingLeft) || 0) + (parseFloat(window.getComputedStyle(msEl).borderLeft) || 0);
-
-
-                choicesEl.style.left = (elRect.left + offsetLeft) + 'px';
-                choicesEl.style.top = (elRect.bottom + offsetBottom) + 'px';
-
+                _recomputePosition();
                 bodyEl.appendChild(choicesEl);
-
                 choicesEl.addEventListener('focusin', _choiceHandler);
+
+                unregisterModelWatch = scope.$watch('model', function() {
+                  console.log('model has changed');
+                  $timeout(function() {
+                    _recomputePosition();
+                  });
+                });
               }
               else {
+                if (unregisterModelWatch != null) {
+                  unregisterModelWatch();
+                  unregisterModelWatch = null;
+                }
+
                 choicesEl.removeEventListener('focusin', _choiceHandler);
                 element[0].appendChild(choicesEl);
               }
