@@ -353,16 +353,6 @@ angular.module('multi-select').directive('multiSelect', [
             };
           },
           post: function(scope, element, attrs, ctrls) {
-            var ngModelCtrl = ctrls[0];
-            var ctrl = ctrls[1];
-
-            scope.options = {
-              selectedPillIndex : -1,
-              search: '',
-              isOpen: false
-            };
-
-            var input = element[0].querySelector('input[type=search]');
 
             function _dispatchKeyup(ev) {
               // horizontal nav
@@ -451,7 +441,6 @@ angular.module('multi-select').directive('multiSelect', [
               }
             }
 
-
             function _initialize() {
               scope.options.closeOnSelect = true;
               scope.options.resetInput = true;
@@ -492,104 +481,107 @@ angular.module('multi-select').directive('multiSelect', [
               }
             }
 
-            scope.$watch(function() {
-                return element[0].offsetParent != null;
-              },
-              function(newVal, oldVal) {
+            function _handleInputWidthRecalculations() {
+              scope.$watch(function() {
+                  return element[0].offsetParent != null;
+                },
+                function(newVal, oldVal) {
 
-                $timeout(function() {
-                  if (newVal) {
-                    resizeSensor(element[0], _recomputeInputWidth);
-                  }
-                  else {
-                    resizeSensor.detach(element[0], _recomputeInputWidth);
-                  }
-                });
-              }
-            );
-
-            scope.$watch('model',
-              function(newVal, oldVal) {
-                if (newVal !== oldVal) {
                   $timeout(function() {
-                    _recomputeInputWidth();
+                    if (newVal) {
+                      resizeSensor(element[0], _recomputeInputWidth);
+                    }
+                    else {
+                      resizeSensor.detach(element[0], _recomputeInputWidth);
+                    }
                   });
                 }
-            }, true);
+              );
 
+              scope.$watch('model',
+                function(newVal, oldVal) {
+                  if (newVal !== oldVal) {
+                    $timeout(function() {
+                      _recomputeInputWidth();
+                    });
+                  }
+              }, true);
+            }
 
-            scope.resolveAbbrevationByItem = function(item) {
-              if (attrs.abbrevationKey) {
-                var getter = $parse(attrs.abbrevationKey);
-                var abbrevation = getter(item);
+            function _registerModelManipulations() {
 
-                if (abbrevation) {
-                  return abbrevation;
+              scope.resolveAbbrevationByItem = function(item) {
+                if (attrs.abbrevationKey) {
+                  var getter = $parse(attrs.abbrevationKey);
+                  var abbrevation = getter(item);
+
+                  if (abbrevation) {
+                    return abbrevation;
+                  }
                 }
+                return scope.resolveLabelByItem(item);
               }
-              return scope.resolveLabelByItem(item);
-            }
 
-            scope.resolveLabelByItem = function(item) {
-              if (attrs.labelKey) {
-                var getter = $parse(attrs.labelKey);
-                var label = getter(item);
+              scope.resolveLabelByItem = function(item) {
+                if (attrs.labelKey) {
+                  var getter = $parse(attrs.labelKey);
+                  var label = getter(item);
 
-                if (label) {
-                  return label;
+                  if (label) {
+                    return label;
+                  }
                 }
+                return item;
               }
-              return item;
+
+              scope.resolveValueByItem = function(item) {
+                if (attrs.labelValue) {
+                  var getter = $parse(attrs.labelValue);
+                  return getter(item);
+                }
+                return item;
+              }
+
+              scope.resolveItemsFromCollectionByValue = function(collection, value) {
+                var getter;
+                if (attrs.labelValue) {
+                  getter = $parse(attrs.labelValue);
+                }
+                else {
+                  getter = function(item) { return item };
+                }
+
+                return collection.filter(function(item) {
+                  return getter(item) === value;
+                });
+              }
+
+              scope.resolveChoiceByValue = function(value) {
+                var filteredChoices = scope.resolveItemsFromCollectionByValue(scope.choices, value);
+
+                if (filteredChoices != null || filteredChoices.length > 0) {
+                  return filteredChoices[0];
+                }
+                return null;
+              }
             }
 
-            scope.resolveValueByItem = function(item) {
-              if (attrs.labelValue) {
-                var getter = $parse(attrs.labelValue);
-                return getter(item);
-              }
-              return item;
+            function _registerEvents() {
+              element[0].addEventListener('keydown', _dispatchKeyup);
+
+              // click on input
+              input.addEventListener('click', _inputHandler);
+              input.addEventListener('focusin', _inputHandler);
+              input.addEventListener('keydown', _inputKeyDownHandler);
+
+              element[0].addEventListener('click', _elementHandler);
+              element[0].addEventListener('focusin', _elementHandler);
+
+              document.addEventListener('focusin', _bodyHandler);
+              document.addEventListener('click', _bodyHandler);
             }
 
-            scope.resolveItemsFromCollectionByValue = function(collection, value) {
-              var getter;
-              if (attrs.labelValue) {
-                getter = $parse(attrs.labelValue);
-              }
-              else {
-                getter = function(item) { return item };
-              }
-
-              return collection.filter(function(item) {
-                return getter(item) === value;
-              });
-            }
-
-            scope.resolveChoiceByValue = function(value) {
-              var filteredChoices = scope.resolveItemsFromCollectionByValue(scope.choices, value);
-
-              if (filteredChoices != null || filteredChoices.length > 0) {
-                return filteredChoices[0];
-              }
-              return null;
-            }
-
-            _initialize(attrs);
-
-            // keystokes
-            element[0].addEventListener('keydown', _dispatchKeyup);
-
-            // click on input
-            input.addEventListener('click', _inputHandler);
-            input.addEventListener('focusin', _inputHandler);
-            input.addEventListener('keydown', _inputKeyDownHandler);
-
-            element[0].addEventListener('click', _elementHandler);
-            element[0].addEventListener('focusin', _elementHandler);
-
-            document.addEventListener('focusin', _bodyHandler);
-            document.addEventListener('click', _bodyHandler);
-
-            scope.$on('$destroy', function() {
+            function _deregisterEvents() {
               input.removeEventListener('click', _inputHandler);
               input.removeEventListener('focusin', _inputHandler);
               input.removeEventListener('keydown', _inputKeyDownHandler);
@@ -599,7 +591,27 @@ angular.module('multi-select').directive('multiSelect', [
               element[0].removeEventListener('click', _elementHandler);
               document.removeEventListener('focusin', _bodyHandler);
               document.removeEventListener('click', _bodyHandler);
+            }
 
+            var ngModelCtrl = ctrls[0];
+            var ctrl = ctrls[1];
+
+            scope.options = {
+              selectedPillIndex : -1,
+              search: '',
+              isOpen: false
+            };
+
+            var input = element[0].querySelector('input[type=search]');
+
+            _initialize(attrs);
+            _handleInputWidthRecalculations();
+            _registerModelManipulations();
+            _registerEvents();
+
+
+            scope.$on('$destroy', function() {
+              _deregisterEvents();
               resizeSensor.detach(element[0], recomputeWidth);
 
             });
