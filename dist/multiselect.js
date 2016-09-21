@@ -463,10 +463,26 @@ angular.module('multi-select').directive('multiSelect', [
 
             }
 
+            scope.resolveAbbrevationByItem = function(item) {
+              if (attrs.abbrevationKey) {
+                var getter = $parse(attrs.abbrevationKey);
+                var abbrevation = getter(item);
+
+                if (abbrevation) {
+                  return abbrevation;
+                }
+              }
+              return scope.resolveLabelByItem(item);
+            }
+
             scope.resolveLabelByItem = function(item) {
               if (attrs.labelKey) {
                 var getter = $parse(attrs.labelKey);
-                return getter(item);
+                var label = getter(item);
+
+                if (label) {
+                  return label;
+                }
               }
               return item;
             }
@@ -588,7 +604,7 @@ angular.module('multi-select').directive('multiSelect', [
 angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
     $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" placeholder="{{placeholder}}" /><multi-select-choices tabindex="-1" scroll-to></multi-select-choices>');
-    $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="model != null && model.length"><li ng-class="{\'selected\' : $index === options.selectedPillIndex }" ng-repeat="item in model">{{resolveLabelByItem(resolveChoiceByValue(item))}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
+    $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="model != null && model.length"><li ng-class="{\'selected\' : $index === options.selectedPillIndex }" ng-repeat="item in model">{{resolveAbbrevationByItem(resolveChoiceByValue(item))}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
     $templateCache.put('multiSelect/choices', '<ul class="multi-select-choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : model : resolveValueByItem as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item, $event)">{{resolveLabelByItem(item)}}</a></li></ul>');
   }
 ]);
