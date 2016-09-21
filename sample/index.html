@@ -20,10 +20,17 @@
       <multi-select choices="options" ng-model="model.selections" close-on-select="false" reset-input="false" placeholder="does not close"></multi-select>
     </div>
     <hr />
+    <div class="ms-wrapper">
+      <multi-select choices="optionsComplex" ng-model="model.selectionsComplex" close-on-select="true" reset-input="true" placeholder="complex / closes" label-key="label" label-value="value"></multi-select>
+    </div>
+    <hr />
     <input type="text" name="bar" value="" />
     <hr />
     <div>
       bound model: {{model.selections}}
+    </div>
+    <div>
+      bound complex model: {{model.selectionsComplex}}
     </div>
     <div>
       <button type="button" ng-click="open()">open</button>

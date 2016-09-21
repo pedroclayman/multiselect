@@ -219,14 +219,36 @@ angular.module('multi-select').filter('unselected', [
 
   function unselectedFilter() {
 
-    return function(items, selected) {
+    // items are choices
+    // selected is model
+
+    return function(items, selected, valueResolveFn) {
       if (selected == null) {
         return items;
       }
 
       return items.filter(function(item) {
-        return selected.indexOf(item) === -1;
+        return selected.indexOf(valueResolveFn(item)) === -1;
       });
+    }
+  }
+]);
+
+angular.module('multi-select').factory('choicesResolver', [
+
+  function choicesResolverFactory() {
+
+    function getKey(obj, key) {
+
+    }
+
+    function getValue() {
+
+    }
+
+    return {
+      getKey : getKey,
+      getValue : getValue
     }
   }
 ]);
@@ -293,16 +315,19 @@ angular.module('multi-select').directive('multiSelect', [
 
             ctrl.selectItem = scope.selectItem = function(item) {
 
+              var resolvedItem = scope.resolveValueByItem(item);
+
               if (ngModelCtrl.$modelValue == null) {
-                scope.model = [item];
+                scope.model = [resolvedItem];
               }
               else{
                 // todo error handling
-                scope.model.push(item);
+                scope.model.push(resolvedItem);
               }
             };
 
             ctrl.unselectItem = scope.unselectItem = function(item) {
+
               if (ngModelCtrl.$modelValue != null) {
                 var items = ngModelCtrl.$modelValue;
                 var idx = items.indexOf(item);
@@ -318,6 +343,9 @@ angular.module('multi-select').directive('multiSelect', [
             };
           },
           post: function(scope, element, attrs, ctrls) {
+            var ngModelCtrl = ctrls[0];
+            var ctrl = ctrls[1];
+
             var input = element[0].querySelector('input[type=search]');
 
             function _dispatchKeyup(ev) {
@@ -421,9 +449,47 @@ angular.module('multi-select').directive('multiSelect', [
                 function(newVal) {
                   scope.options.resetInput = newVal == null ? true : scope.$eval(newVal);
                 });
+
             }
-            var ngModelCtrl = ctrls[0];
-            var ctrl = ctrls[1];
+
+            scope.resolveLabelByItem = function(item) {
+              if (attrs.labelKey) {
+                var getter = $parse(attrs.labelKey);
+                return getter(item);
+              }
+              return item;
+            }
+
+            scope.resolveValueByItem = function(item) {
+              if (attrs.labelValue) {
+                var getter = $parse(attrs.labelValue);
+                return getter(item);
+              }
+              return item;
+            }
+
+            scope.resolveItemsFromCollectionByValue = function(collection, value) {
+              var getter;
+              if (attrs.labelValue) {
+                getter = $parse(attrs.labelValue);
+              }
+              else {
+                getter = function(item) { return item };
+              }
+
+              return collection.filter(function(item) {
+                return getter(item) === value;
+              });
+            }
+
+            scope.resolveChoiceByValue = function(value) {
+              var filteredChoices = scope.resolveItemsFromCollectionByValue(scope.choices, value);
+
+              if (filteredChoices != null || filteredChoices.length > 0) {
+                return filteredChoices[0];
+              }
+              return null;
+            }
 
             scope.options = {
               selectedPillIndex : -1,
@@ -511,8 +577,8 @@ angular.module('multi-select').directive('multiSelect', [
 angular.module('multi-select').run(['$templateCache',
   function ($templateCache) {
     $templateCache.put('multiSelect/main', '<multi-select-pills></multi-select-pills><input type="search" ng-model="options.search" placeholder="{{placeholder}}" /><multi-select-choices tabindex="-1" scroll-to></multi-select-choices>');
-    $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="model != null && model.length"><li ng-class="{\'selected\' : $index === options.selectedPillIndex }" ng-repeat="item in model">{{item}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
-    $templateCache.put('multiSelect/choices', '<ul class="multi-select-choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : model as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item, $event)">{{item}}</a></li></ul>');
+    $templateCache.put('multiSelect/pills', '<ul class="pills" ng-show="model != null && model.length"><li ng-class="{\'selected\' : $index === options.selectedPillIndex }" ng-repeat="item in model">{{resolveLabelByItem(resolveChoiceByValue(item))}}&nbsp;<a tabindex="-1" href ng-click="unselectItem(item)">x</a></li></ul>');
+    $templateCache.put('multiSelect/choices', '<ul class="multi-select-choices" ng-show="options.isOpen" tabindex="-1"><li ng-repeat="item in choices | filter : options.search | unselected : model : resolveValueByItem as filteredChoices" ng-class="{\'selected\' : $index === currentIndex }"><a tabindex="-1" ng-click="choiceClicked(item, $event)">{{resolveLabelByItem(item)}}</a></li></ul>');
   }
 ]);
 

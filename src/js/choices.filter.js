@@ -2,13 +2,16 @@ angular.module('multi-select').filter('unselected', [
 
   function unselectedFilter() {
 
-    return function(items, selected) {
+    // items are choices
+    // selected is model
+
+    return function(items, selected, valueResolveFn) {
       if (selected == null) {
         return items;
       }
 
       return items.filter(function(item) {
-        return selected.indexOf(item) === -1;
+        return selected.indexOf(valueResolveFn(item)) === -1;
       });
     }
   }
