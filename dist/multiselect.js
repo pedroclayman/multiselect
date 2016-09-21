@@ -679,7 +679,10 @@ angular.module('multi-select').directive('multiSelectPills', [
                   else {
                     scope.options.selectedPillIndex--;
                   }
-
+                }
+                // remove last element if no pill is selected
+                else if (modelLength > 0) {
+                  scope.model.splice(modelLength - 1, 1);
                 }
               break;
               case constants.KEY.DELETE:
