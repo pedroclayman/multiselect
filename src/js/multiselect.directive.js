@@ -183,14 +183,28 @@ angular.module('multi-select').directive('multiSelect', [
               if (lis.length > 0) {
                 var treshold = 50;
                 var lastPill = lis[lis.length - 1];
-                var mspRect = element[0].querySelector('.pills').getBoundingClientRect();
+                var pillsEl = element[0].querySelector('.pills');
+
                 var lpRect = lastPill.getBoundingClientRect();
+                var pillsRect = pillsEl.getBoundingClientRect();
+                var msRect = element[0].getBoundingClientRect();
 
-                var availableWidth = parseFloat($window.getComputedStyle(element[0]).width);
-                var right = lpRect.right - mspRect.left;
+                var lastPillMarginRight = parseFloat($window.getComputedStyle(lastPill).marginRight) || 0;
+                var lastPillBorderRight = parseFloat($window.getComputedStyle(lastPill).borderRight) || 0;
+                var pillOffset = lpRect.right + lastPillMarginRight + lastPillBorderRight - pillsRect.left;
 
-                if (availableWidth - right > treshold) {
-                  input.style.width = (availableWidth - right) + 'px';
+                var msComputedStyle = $window.getComputedStyle(element[0]);
+                var width = (parseFloat(msComputedStyle.width) || 0) -
+                            (parseFloat(msComputedStyle.borderLeft) || 0) -
+                            (parseFloat(msComputedStyle.paddingLeft) || 0) -
+                            (parseFloat(msComputedStyle.paddingRight) || 0) -
+                            (parseFloat(msComputedStyle.borderRight) || 0);
+
+
+                var availableWidth = width - pillOffset;
+
+                if (availableWidth > treshold) {
+                  input.style.width = availableWidth + 'px';
                 }
                 else {
                   input.style.width = '100%';
@@ -333,8 +347,7 @@ angular.module('multi-select').directive('multiSelect', [
 
             scope.$on('$destroy', function() {
               _deregisterEvents();
-              resizeSensor.detach(element[0], recomputeWidth);
-
+              resizeSensor.detach(element[0], _recomputeInputWidth);
             });
           }
         }

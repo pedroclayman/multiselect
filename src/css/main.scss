@@ -1,21 +1,38 @@
 $lightColor: #ffffff;
+$gray: #d4d4d4;
+$active: #009BFF;
 
 multi-select {
   display: block;
   background-color: $lightColor;
+  text-align: left;
+  border: 1px solid $gray;
+  padding: 2px;
 
   .pills {
     margin: 0;
     padding: 0;
     display: inline;
 
+
     li {
       display: inline-block;
-      border: 1px solid gray;
+      border: 1px solid $gray;
       padding: 2px 5px;
+      margin-right: 2px;
+
+      a {
+        text-decoration: none;
+        color: $active;
+      }
 
       &.selected {
-        background-color: red;
+        border-color: $active;
+        background-color: $active;
+
+        &, a {
+          color: $lightColor;
+        }
       }
     }
   }
@@ -25,16 +42,17 @@ multi-select {
     border: none;
     min-width: 50px;
     width: 100%;
+    outline: none;
   }
 }
 
 .multi-select-choices {
-  background-color: white;
+  background-color: $lightColor;
   display: block;
   position: absolute;
   margin: 0;
   padding: 0;
-  border: 1px solid gray;
+  border: 1px solid $gray;
   border-top: none;
   max-height: 100px;
   overflow-y: auto;
@@ -45,10 +63,15 @@ multi-select {
     display: block;
     padding: 2px 5px;
 
-    &.selected {
+    a {
+      display: block;
+      cursor: pointer;
+    }
 
+    &.selected {
+      background-color: $active;
       a {
-        color: red;
+        color: $lightColor;
       }
     }
   }

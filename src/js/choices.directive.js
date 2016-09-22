@@ -103,9 +103,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
           var elRect = msEl.getBoundingClientRect();
 
           var offsetBottom = (parseFloat(window.getComputedStyle(msEl).paddingBottom) || 0) + (parseFloat(window.getComputedStyle(msEl).borderBottom) || 0);
-          var offsetLeft = (parseFloat(window.getComputedStyle(msEl).paddingLeft) || 0) + (parseFloat(window.getComputedStyle(msEl).borderLeft) || 0);
-
-          choicesEl.style.left = (elRect.left + offsetLeft) + 'px';
+          choicesEl.style.left = elRect.left + 'px';
           choicesEl.style.top = (elRect.bottom + offsetBottom) + 'px';
         }
 
