@@ -117,7 +117,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
           switch(ev.keyCode) {
 
             case constants.KEY.DOWN:
-              if (!scope.options.isOpen) {
+              if (!scope.options.isOpen && scope.filteredChoices && scope.filteredChoices.length > 0) {
                 scope.options.isOpen = true;
                 scope.currentIndex = 0;
               }
