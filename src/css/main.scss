@@ -1,6 +1,6 @@
 $lightColor: #ffffff;
 $gray: #d4d4d4;
-$active: #009BFF;
+$active: #0070b8;
 
 multi-select {
   display: block;
@@ -13,7 +13,7 @@ multi-select {
     margin: 0;
     padding: 0 0 2px 0;
     display: inline;
-
+    height: inherit;
 
     li {
       display: inline-block;

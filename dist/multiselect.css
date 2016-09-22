@@ -7,7 +7,8 @@ multi-select {
   multi-select .pills {
     margin: 0;
     padding: 0 0 2px 0;
-    display: inline; }
+    display: inline;
+    height: inherit; }
     multi-select .pills li {
       display: inline-block;
       border: 1px solid #d4d4d4;
@@ -16,10 +17,10 @@ multi-select {
       margin-right: 2px; }
       multi-select .pills li a {
         text-decoration: none;
-        color: #009BFF; }
+        color: #0070b8; }
       multi-select .pills li.selected {
-        border-color: #009BFF;
-        background-color: #009BFF; }
+        border-color: #0070b8;
+        background-color: #0070b8; }
         multi-select .pills li.selected, multi-select .pills li.selected a {
           color: #ffffff; }
   multi-select input {
@@ -46,6 +47,6 @@ multi-select {
       display: block;
       cursor: pointer; }
     .multi-select-choices li.selected {
-      background-color: #009BFF; }
+      background-color: #0070b8; }
       .multi-select-choices li.selected a {
         color: #ffffff; }
