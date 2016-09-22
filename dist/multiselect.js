@@ -467,15 +467,15 @@ angular.module('multi-select').directive('multiSelect', [
                 var msRect = element[0].getBoundingClientRect();
 
                 var lastPillMarginRight = parseFloat($window.getComputedStyle(lastPill).marginRight) || 0;
-                var lastPillBorderRight = parseFloat($window.getComputedStyle(lastPill).borderRight) || 0;
+                var lastPillBorderRight = parseFloat($window.getComputedStyle(lastPill).borderRightWidth) || 0;
                 var pillOffset = lpRect.right + lastPillMarginRight + lastPillBorderRight - pillsRect.left;
 
                 var msComputedStyle = $window.getComputedStyle(element[0]);
                 var width = (parseFloat(msComputedStyle.width) || 0) -
-                            (parseFloat(msComputedStyle.borderLeft) || 0) -
+                            (parseFloat(msComputedStyle.borderLeftWidth) || 0) -
                             (parseFloat(msComputedStyle.paddingLeft) || 0) -
                             (parseFloat(msComputedStyle.paddingRight) || 0) -
-                            (parseFloat(msComputedStyle.borderRight) || 0);
+                            (parseFloat(msComputedStyle.borderRightWidth) || 0);
 
 
                 var availableWidth = width - pillOffset;
