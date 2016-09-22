@@ -7,11 +7,11 @@ multi-select {
   background-color: $lightColor;
   text-align: left;
   border: 1px solid $gray;
-  padding: 2px;
+  padding: 0 2px;
 
   .pills {
     margin: 0;
-    padding: 0;
+    padding: 0 0 2px 0;
     display: inline;
 
 
@@ -19,6 +19,7 @@ multi-select {
       display: inline-block;
       border: 1px solid $gray;
       padding: 2px 5px;
+      margin-top: 2px;
       margin-right: 2px;
 
       a {

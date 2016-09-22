@@ -18,13 +18,15 @@
   <body ng-controller="app">
     <input type="text" name="foo" value=""/>
     <hr />
+    <h1>One that closes</h1>
     <div class="ms-wrapper">
       <multi-select choices="options" ng-model="model.selections" close-on-select="true" placeholder="closes"></multi-select>
     </div>
+    <h1>One that does not</h1>
     <div class="ms-wrapper">
       <multi-select choices="options" ng-model="model.selections" close-on-select="false" reset-input="false" placeholder="does not close"></multi-select>
     </div>
-    <hr />
+    <h1>And one that binds to an object</h1>
     <div class="ms-wrapper">
       <multi-select choices="optionsComplex" ng-model="model.selectionsComplex" close-on-select="true" reset-input="true" placeholder="complex / closes" abbrevation-key="abbrevation" label-key="label" label-value="value"></multi-select>
     </div>
