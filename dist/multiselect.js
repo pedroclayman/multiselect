@@ -704,7 +704,7 @@ angular.module('multi-select').directive('multiSelectPills', [
                       scope.options.selectedPillIndex = -1
                     }
                     else {
-                      scope.options.selectedPillIndex--;
+                      scope.options.selectedPillIndex = Math.min(modelLength - 2, scope.options.selectedPillIndex);
                     }
                   }
                 break;
