@@ -392,7 +392,9 @@ angular.module('multi-select').directive('multiSelect', [
                 }
               }
               else if(~[constants.KEY.BACKSPACE, constants.KEY.DELETE].indexOf(ev.keyCode)) {
-                _registeredCtrls['pills'].handleEvent(ev);
+                if (input.selectionStart == 0) {
+                  _registeredCtrls['pills'].handleEvent(ev);
+                }
               }
               else if (~[constants.KEY.UP, constants.KEY.DOWN, constants.KEY.ENTER, constants.KEY.ESC].indexOf(ev.keyCode)) {
                 _registeredCtrls['choices'].handleEvent(ev);
