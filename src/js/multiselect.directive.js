@@ -99,9 +99,18 @@ angular.module('multi-select').directive('multiSelect', [
             }
 
             function _inputKeyDownHandler(ev) {
-              if (~[constants.KEY.LEFT, constants.KEY.RIGHT].indexOf(ev.keyCode) &&
-                  input.selectionStart == 0 &&
-                  scope.options.selectedPillIndex !== -1) {
+              function shouldPreventLeftRight() {
+                return ~[constants.KEY.LEFT, constants.KEY.RIGHT].indexOf(ev.keyCode) &&
+                        input.selectionStart == 0 &&
+                        scope.options.selectedPillIndex !== -1;
+              }
+
+              function shouldPreventDelete() {
+                return ~[constants.KEY.DELETE].indexOf(ev.keyCode) &&
+                        scope.options.selectedPillIndex !== -1;
+              }
+
+              if (shouldPreventLeftRight() || shouldPreventDelete()) {
                 ev.preventDefault();
               }
 
