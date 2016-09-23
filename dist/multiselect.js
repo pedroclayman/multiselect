@@ -61,8 +61,8 @@ if (!Element.prototype.scrollIntoViewIfNeeded) {
 }
 
 angular.module('multi-select').directive('multiSelectChoices', [
-  'constants', '$timeout',
-  function multiSelectChoicesDirective(constants, $timeout) {
+  'constants', '$timeout', 'resizeSensor', 'msDebounce',
+  function multiSelectChoicesDirective(constants, $timeout, resizeSensor, debounce) {
     function hasEventPathProperty() {
       return Event.prototype.hasOwnProperty('path');
     }
@@ -184,13 +184,15 @@ angular.module('multi-select').directive('multiSelectChoices', [
                     _recomputePosition();
                   });
                 }, true);
+
+                resizeSensor(msEl, _debouncedRecomputePosition);
               }
               else {
                 if (unregisterModelWatch != null) {
                   unregisterModelWatch();
                   unregisterModelWatch = null;
                 }
-
+                resizeSensor.detach(msEl, _debouncedRecomputePosition);
                 choicesEl.removeEventListener('focusin', _choiceHandler);
                 element[0].appendChild(choicesEl);
               }
@@ -213,7 +215,10 @@ angular.module('multi-select').directive('multiSelectChoices', [
           inputEl.focus();
         }
 
+        var _debouncedRecomputePosition = debounce(_recomputePosition, 30);
+
         scope.$on('$destroy', function() {
+          resizeSensor.detach(msEl, _debouncedRecomputePosition);
           choicesEl.removeEventListener('focusin', _choiceHandler);
           msCtrl.unregisterCtrl('choices');
         });
@@ -258,6 +263,28 @@ angular.module('multi-select').factory('choicesResolver', [
       getKey : getKey,
       getValue : getValue
     }
+  }
+]);
+
+// copied from this blog here https://davidwalsh.name/javascript-debounce-function
+// inspired by the underscore implementation
+angular.module('multi-select').factory('msDebounce', [
+
+  function debounceFactory() {
+    return function debounce(func, wait, immediate) {
+      	var timeout;
+      	return function() {
+      		var context = this, args = arguments;
+      		var later = function() {
+      			timeout = null;
+      			if (!immediate) func.apply(context, args);
+      		};
+      		var callNow = immediate && !timeout;
+      		clearTimeout(timeout);
+      		timeout = setTimeout(later, wait);
+      		if (callNow) func.apply(context, args);
+      	};
+      };
   }
 ]);
 

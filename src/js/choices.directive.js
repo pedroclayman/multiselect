@@ -1,6 +1,6 @@
 angular.module('multi-select').directive('multiSelectChoices', [
-  'constants', '$timeout',
-  function multiSelectChoicesDirective(constants, $timeout) {
+  'constants', '$timeout', 'resizeSensor', 'msDebounce',
+  function multiSelectChoicesDirective(constants, $timeout, resizeSensor, debounce) {
     function hasEventPathProperty() {
       return Event.prototype.hasOwnProperty('path');
     }
@@ -122,13 +122,15 @@ angular.module('multi-select').directive('multiSelectChoices', [
                     _recomputePosition();
                   });
                 }, true);
+
+                resizeSensor(msEl, _debouncedRecomputePosition);
               }
               else {
                 if (unregisterModelWatch != null) {
                   unregisterModelWatch();
                   unregisterModelWatch = null;
                 }
-
+                resizeSensor.detach(msEl, _debouncedRecomputePosition);
                 choicesEl.removeEventListener('focusin', _choiceHandler);
                 element[0].appendChild(choicesEl);
               }
@@ -151,7 +153,10 @@ angular.module('multi-select').directive('multiSelectChoices', [
           inputEl.focus();
         }
 
+        var _debouncedRecomputePosition = debounce(_recomputePosition, 30);
+
         scope.$on('$destroy', function() {
+          resizeSensor.detach(msEl, _debouncedRecomputePosition);
           choicesEl.removeEventListener('focusin', _choiceHandler);
           msCtrl.unregisterCtrl('choices');
         });
