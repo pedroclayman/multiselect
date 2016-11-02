@@ -602,7 +602,7 @@ angular.module('multi-select').directive('multiSelect', [
                 }
 
                 return collection.filter(function(item) {
-                  return getter(item) === value;
+                  return angular.equals(getter(item), value);
                 });
               }
 
