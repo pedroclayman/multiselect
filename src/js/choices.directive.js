@@ -156,6 +156,7 @@ angular.module('multi-select').directive('multiSelectChoices', [
         var _debouncedRecomputePosition = debounce(_recomputePosition, 30);
 
         scope.$on('$destroy', function() {
+          choicesEl.remove();
           resizeSensor.detach(msEl, _debouncedRecomputePosition);
           choicesEl.removeEventListener('focusin', _choiceHandler);
           msCtrl.unregisterCtrl('choices');

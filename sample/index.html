@@ -16,31 +16,12 @@
     </style>
   </head>
   <body ng-controller="app">
-    <input type="text" name="foo" value=""/>
-    <hr />
-    <h1>One that closes</h1>
-    <div class="ms-wrapper">
-      <multi-select choices="options" ng-model="model.selections" close-on-select="true" placeholder="closes"></multi-select>
-    </div>
-    <h1>One that does not</h1>
-    <div class="ms-wrapper">
-      <multi-select choices="options" ng-model="model.selections" close-on-select="false" reset-input="false" placeholder="does not close"></multi-select>
-    </div>
-    <h1>And one that binds to an object</h1>
-    <div class="ms-wrapper">
-      <multi-select choices="optionsComplex" ng-model="model.selectionsComplex" close-on-select="true" reset-input="true" placeholder="complex / closes" abbrevation-key="abbrevation" label-key="label" label-value="value"></multi-select>
-    </div>
-    <hr />
-    <input type="text" name="bar" value="" />
-    <hr />
-    <div>
-      bound model: {{model.selections}}
-    </div>
-    <div>
-      bound complex model: {{model.selectionsComplex}}
-    </div>
-    <div>
-      <button type="button" ng-click="resetCollection()">reset collection</button>
+    <select ng-model="selectedTemplate" ng-options="template for template in availableTemplates"></select>
+    <br>
+    <hr>
+    <br>
+    <div ng-include="selectedTemplate">
+
     </div>
 
     <script type="text/javascript" src="dist/multiselect.js"></script>
