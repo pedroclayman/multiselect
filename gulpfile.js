@@ -27,4 +27,4 @@ gulp.task('default', ['js', 'sass'], function(){});
 gulp.task('watch', function() {
   gulp.watch(stylesGlob, ['sass']);
   gulp.watch(scriptsGlob, ['js']);
-})
+});
